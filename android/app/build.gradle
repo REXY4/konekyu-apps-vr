@@ -74,9 +74,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.konekyuapps"
+    namespace "id.wahana.inetyu"
     defaultConfig {
-        applicationId "com.konekyuapps"
+        applicationId "id.wahana.inetyu"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -89,10 +89,16 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file('userhotspot-keystore.jks')
+            storePassword 'userhotspot-production'
+            keyAlias 'userhotspot'
+            keyPassword 'userhotspot-production'
+        }
     }
     buildTypes {
         debug {
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
         }
         release {
             // Caution! In production, you need to generate your own keystore file.

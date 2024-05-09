@@ -1,4 +1,4 @@
-package com.konekyuapps
+package id.wahana.inetyu
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

@@ -1,4 +1,4 @@
-package com.konekyuapps
+package id.wahana.inetyu
 
 import android.app.Application
 import com.facebook.react.PackageList

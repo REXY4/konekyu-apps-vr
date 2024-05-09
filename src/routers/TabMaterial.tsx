@@ -1,16 +1,25 @@
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import HomeScreen from '../screens/home';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { TabBarGoTo, TabBarIconHome, TabBarIconProfile, TabBarIconVoucher, TabBarLocation, TabBarWifi } from '../components/icons/TabBarIcon';
+import {  TabBarIconHome, TabBarIconProfile, TabBarIconVoucher, TabBarLocation, TabBarWifi } from '../components/icons/TabBarIcon';
 import WifiScreen from '../screens/wifi';
-import { View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
+import ScreenActionType from './types/ScreenActionType';
+import { Profiler, useEffect } from 'react';
+import { useRoute } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
+import AuthActionType from '../state/actions-type/auth.type';
+import VoucherScreen from '../screens/voucher';
+import Profiles from '../screens/profiles';
+import LocationScreen from '../screens/locations';
 
 const Tab = createMaterialBottomTabNavigator();
 //"#0074E0"
 export default function MyTabs() {
+
+
   return (
     <Tab.Navigator
-    
     shifting={false}
     inactiveColor='#A8A8A8'
     activeColor="#0074E0"
@@ -26,40 +35,39 @@ export default function MyTabs() {
     compact
     barStyle={{ backgroundColor: '#FFFFFF' }}
     >
-      <Tab.Screen name="Beranda" 
+      <Tab.Screen
+      name={ScreenActionType.HOME} 
       component={HomeScreen} 
-
       options={{
         tabBarLabel: 'Beranda',
         tabBarIcon: ({ color }) => {
-            console.log("check color" , color)
+         
+         
          return <TabBarIconHome color={color == "#0074E0" ? "#FFFFFF" : color} size={26} />
         },
       }}
       />
-      <Tab.Screen name="Wifi" component={WifiScreen} 
+      <Tab.Screen name={ScreenActionType.WIFI} component={WifiScreen} 
        options={{
         tabBarLabel: 'Internet',
         tabBarIcon: ({ color }) => {
-            console.log("check color" , color)
          return <TabBarWifi color={color == "#0074E0" ? "#FFFFFF" : color} size={26} />
         },
       }}
       />
-      <Tab.Screen name="Lokasi" component={HomeScreen}  
+      <Tab.Screen
+      name={ScreenActionType.LOCATION} component={LocationScreen}  
        options={{
         tabBarLabel: 'Lokasi',
         tabBarIcon: ({ color }) => {
-            console.log("check color" , color)
          return <TabBarLocation color={color == "#0074E0" ? "#FFFFFF" : color} size={26} />
         },
       }}/>
      
-      <Tab.Screen name="Voucher" 
+      <Tab.Screen name={ScreenActionType.VOUCHER}
       options={{
-        tabBarLabel: 'Voucherku',
+        tabBarLabel: 'Voucher',
         tabBarIcon: ({ color }) => {
-            console.log("check color" , color)
          return (
             <View style={{
                 transform: [{ rotate: '140deg' }]
@@ -68,19 +76,18 @@ export default function MyTabs() {
          </View>)
         },
       }}
-      component={HomeScreen} />
+      component={VoucherScreen} />
 
-<Tab.Screen name="Profile" 
+<Tab.Screen name={ScreenActionType.PROFILES}
       options={{
         tabBarLabel: 'Profile',
         tabBarIcon: ({ color }) => {
-            console.log("check color" , color)
          return (   
          <TabBarIconProfile color={color == "#0074E0" ? "#FFFFFF" : color} size={26} />
         )
         },
       }}
-      component={HomeScreen} />
+      component={Profiles} />
     </Tab.Navigator>
   );
 }
