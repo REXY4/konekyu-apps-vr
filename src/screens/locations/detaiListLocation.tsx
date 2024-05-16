@@ -16,25 +16,18 @@ import LocationActionType from "../../state/actions-type/location.type";
 const {height} =  Dimensions.get("screen");
 
 
-const LocationScreen = () =>{
-  const {locationData} = LocationUseCase();
+const DetailListLocation = () =>{
+  const {locationData, detailLocation} = LocationUseCase();
   const [locationRekomendasi, setLocationRekomendasi] = useState<GetRekomendLocationEn | null>(null)
   const [myLocation, setMyLocation] = useState<any|null>(null)
   const dispatch = useDispatch();
 
 
   const getLocRekomend = async () =>{
-    if(locationData && myLocation){
-      const distances = locationData.map((location:GetMemberLocation) => ({
-        location,
-        distance: calculateDistance(myLocation.latitude, myLocation.longitude, parseFloat(location.latitude), parseFloat(location.longitude)),
-    }));
-    distances.sort((a, b) => a.distance - b.distance);
-      const closestLocation = distances[0].location;
-      const closestDistance = distances[0].distance;
+    if(detailLocation){
       setLocationRekomendasi({
-        location : closestLocation,
-        distance : closestDistance,
+        location : detailLocation,
+        distance : calculateDistance(myLocation.latitude, myLocation.longitude, parseFloat(detailLocation.latitude), parseFloat(detailLocation.longitude)),
       })
     }
   }
@@ -83,11 +76,15 @@ const LocationScreen = () =>{
               <Suspense fallback={
                              <MapLoader/>
               }>
-                {locationRekomendasi && 
-              <MapDetailLocation myLocation={{
-                latitude : parseFloat(locationRekomendasi?.location.latitude),
-                longitude : parseFloat(locationRekomendasi?.location.longitude),
-              }}/>}
+                {detailLocation &&
+              <MapDetailLocation 
+              myLocation={
+                {
+                    latitude : parseFloat(detailLocation?.latitude),
+                    longitude : parseFloat(detailLocation?.longitude)
+                }
+              }/>
+                }
               </Suspense>
             </View>
               <View style={{
@@ -105,7 +102,8 @@ const LocationScreen = () =>{
                 fontFamily : FontStyle.BOLD,
                 color : Colors.ResColor.black,
                 fontSize : 18,
-              }}>hotspot Terdekat</Text>
+                width : 200,
+              }}>{locationRekomendasi?.location.name}</Text>
               <ButtonLink onPress={() => navigate(ScreenActionType.LIST_LOCATION)} label="Selengkapnya >" textColor={Colors.ResColor.blue} disable={false} size={14} style={undefined}/>
             </View>
             {locationRekomendasi !== null ?
@@ -114,9 +112,9 @@ const LocationScreen = () =>{
             }}>
                 <Text  style={{
                 fontFamily : FontStyle.MEDIUM,
-                color : Colors.ResColor.black,
+                color : Colors.ResColor.gray,
                 fontSize : 14,
-              }} >{locationRekomendasi.location.name} <Text style={{
+              }} >Jarak  : <Text style={{
                 color : Colors.ResColor.yellow
               }}>({Math.floor(locationRekomendasi.distance * 1000) < 1000 ? Math.floor(locationRekomendasi.distance * 1000) + " Meter" : Math.floor(locationRekomendasi.distance * 1000) / 1000 + " Km"  })</Text></Text>
               <Text  style={{
@@ -191,4 +189,4 @@ const LocationScreen = () =>{
 }
 
   
-export default LocationScreen;
+export default DetailListLocation;

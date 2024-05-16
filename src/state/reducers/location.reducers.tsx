@@ -9,7 +9,8 @@ type LocationStoreState = Omit<
 >
 
 const INITIAL_STATE: LocationStoreState = {
-    locationData : null
+    locationData : null,
+    detailLocation : null
 };
 
 const LocationReducers = (state: LocationStoreState | any = INITIAL_STATE, action: AnyAction) => {
@@ -18,7 +19,12 @@ const LocationReducers = (state: LocationStoreState | any = INITIAL_STATE, actio
             return {
                 ...state,
                 locationData : action.payload
-            }                 
+            }
+        case LocationActionType.GET_DETAIL_LOCATION:
+            return {
+                ...state,
+                detailLocation : action.payload,
+            }                    
         default:
             return state;
     }

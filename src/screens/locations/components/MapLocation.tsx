@@ -1,38 +1,39 @@
-import { Dimensions, View, StyleSheet, Image } from "react-native"
+import { Dimensions, View, StyleSheet, Image, Linking, TouchableOpacity } from "react-native"
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'; 
 import GetLocation from 'react-native-get-location'
-import { useEffect, useState } from "react";
-import { GetLocationEntities, GetMemberLocation } from "../../../entities/location.entities";
+import React ,{  useMemo, useState } from "react";
+import {  GetMemberLocation, MyLocationEntities } from "../../../entities/location.entities";
 import LocationUseCase from "../../../use-case/location.usecase";
 import IconLocation from "./IconLocation";
+import { useDispatch } from "react-redux";
+import LocationActionType from "../../../state/actions-type/location.type";
+import ScreenActionType from "../../../routers/types/ScreenActionType";
+import { navigate } from "../../../routers/NavRef";
 const {width} = Dimensions.get("screen");
 
-const MapLocation = () =>{
-  const [myLocation, setMyLocation] = useState<any|null>(null)
+interface Props {
+  myLocation : MyLocationEntities
+}
+
+const MapLocation = ({myLocation}:Props) =>{
   const {locationData} = LocationUseCase();
 
-  const getLocation = () =>{
-        GetLocation.getCurrentPosition({
-          enableHighAccuracy: true,
-          timeout: 60000,
-      })
-      .then(location => {
-        setMyLocation(location);
-      })
-      .catch(error => {
-          const { code, message } = error;
-          console.warn(code, message);
-      })
-  }
+  
+  const handleOpenLink = (lat:number, long:number) =>{
+    const linkGo = `https://www.google.com/maps?q=${lat},${long}`
+    Linking.openURL(linkGo);
+ }
+ const dispatch = useDispatch();
+ 
+ const handleDetailData = (item:GetMemberLocation) =>{
+  dispatch({
+      type : LocationActionType.GET_DETAIL_LOCATION,
+      payload : item,
+    })
+  navigate(ScreenActionType.DETAIL_LIST_LOCATION);  
+  //   navigate(ScreenActionType.DETAIL_LOCATION_DIRECTION)
+}
 
-
-  useEffect(()=>{
-    getLocation()
-  },[]);
-  const lokasiSementara = {
-    latitude :-6.314508510022441,
-    longitude : 107.30258366595463,
-  }
 
     return(
              <View style={styles.container}>
@@ -43,8 +44,8 @@ const MapLocation = () =>{
             region={{
                 // latitude: myLocation.latitude,
                 // longitude: myLocation.longitude,
-                latitude : lokasiSementara.latitude,
-                longitude : lokasiSementara.longitude,
+                latitude : myLocation.latitude,
+                longitude : myLocation.longitude,
                 latitudeDelta: 0.01,
                 longitudeDelta: 0.01,
             }}
@@ -52,8 +53,8 @@ const MapLocation = () =>{
             <Marker coordinate={{
               // longitude : myLocation.longitude,
               // latitude : myLocation.latitude,
-              longitude : lokasiSementara.longitude,
-              latitude : lokasiSementara.latitude,
+              longitude : myLocation.longitude,
+              latitude : myLocation.latitude,
             }} 
             >
                 <Image
@@ -66,6 +67,7 @@ const MapLocation = () =>{
               locationData.map((item:GetMemberLocation)=>{
                 return(
                   <Marker 
+                  onPress={()=>handleDetailData(item)}
                   style={{
                     height : 50,
                     width : 50,
@@ -77,13 +79,13 @@ const MapLocation = () =>{
                     latitude : parseFloat(item.latitude),
                   }} 
                   >
-                    <View style={{
+                    <TouchableOpacity style={{
                       position : "relative",
                       top : 25,
                       left : 12,
                     }}>
                     <IconLocation/>
-                    </View>
+                    </TouchableOpacity>
                   </Marker>
                 )
               })
@@ -108,4 +110,4 @@ const styles = StyleSheet.create({
    });
    
 
-export default MapLocation;
+export default React.memo(MapLocation);

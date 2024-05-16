@@ -7,11 +7,16 @@ import { useEffect } from 'react';
 import OnboardingOne from '../screens/onboarding/onboarding1';
 import Colors from '../components/colors/Colors';
 import ListLocationScreen from '../screens/locations/ListLocationScreen';
+import DetailLocation from '../screens/locations/detailLocation';
+import LocationUseCase from '../use-case/location.usecase';
+import DetailListLocation from '../screens/locations/detaiListLocation';
+import OpenMapLocation from '../screens/locations/OpenMapScreen';
 
 const Stack = createStackNavigator();
 
 export default function MyStack() {
   const {isLogin} = AuthUseCase()
+  const {detailLocation} = LocationUseCase();
  
   return (
     <Stack.Navigator>
@@ -60,6 +65,59 @@ export default function MyStack() {
        }}
        name={ScreenActionType.LIST_LOCATION}
         component={ListLocationScreen} />
+      
+      <Stack.Screen 
+       options={{
+         headerShown  :true,
+         title : detailLocation !== null ? detailLocation.name : "Map Lokasi",
+         cardStyle : {
+          backgroundColor : Colors.ResColor.lightBlue,
+         },
+         headerTitleStyle: {
+          color : Colors.ResColor.white,
+         },
+         headerTintColor: Colors.ResColor.white,
+         headerStyle: {
+          backgroundColor  :Colors.ResColor.blue,
+         }
+       }}
+       name={ScreenActionType.DETAIL_LOCATION_DIRECTION}
+        component={DetailLocation} />
+
+<Stack.Screen 
+       options={{
+         headerShown  :true,
+         title : detailLocation !== null ? detailLocation.name : "Map Lokasi",
+         cardStyle : {
+          backgroundColor : Colors.ResColor.lightBlue,
+         },
+         headerTitleStyle: {
+          color : Colors.ResColor.white,
+         },
+         headerTintColor: Colors.ResColor.white,
+         headerStyle: {
+          backgroundColor  :Colors.ResColor.blue,
+         }
+       }}
+       name={ScreenActionType.DETAIL_LIST_LOCATION}
+        component={DetailListLocation} />
+        <Stack.Screen 
+       options={{
+         headerShown  :true,
+         title :  "Cari Hostpot Terdekat",
+         cardStyle : {
+          backgroundColor : Colors.ResColor.lightBlue,
+         },
+         headerTitleStyle: {
+          color : Colors.ResColor.white,
+         },
+         headerTintColor: Colors.ResColor.white,
+         headerStyle: {
+          backgroundColor  :Colors.ResColor.blue,
+         }
+       }}
+       name={ScreenActionType.OPEN_MAP_LOCATION}
+        component={OpenMapLocation} />
         </>
     }
     </Stack.Navigator>

@@ -28,6 +28,7 @@ function CarrouselPrimary({data}:Props) {
                                  }}
                 renderItem={({ item,index }) => {
                  return <View
+                 key={String(item.id)}
                         style={{
                             flex: 1,
                             justifyContent: 'center',
@@ -47,4 +48,4 @@ function CarrouselPrimary({data}:Props) {
     );
 }
 
-export default CarrouselPrimary;
+export default React.memo(CarrouselPrimary);

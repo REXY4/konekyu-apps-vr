@@ -1,19 +1,16 @@
-import { useDispatch, useSelector } from "react-redux";
-import { AuthSettingStore } from "../state/setting-store/auth.setting.store";
-import { AppRootState } from "../state/stores";
-import { AuthStoreState } from "../state/reducers/auth.reducers";
 import { useCallback } from "react";
-import AuthAction from "../state/actions/auth.action";
-import { RequestLoginEntities } from "../entities/auth.entities";
-import { LocationSettiingStore } from "../state/setting-store/location.setting.store";
-import { LocationStoreState } from "../state/reducers/location.reducers";
+import { useDispatch, useSelector } from "react-redux";
 import { LocationAction } from "../state/actions/location.action";
+import { LocationStoreState } from "../state/reducers/location.reducers";
+import { LocationSettiingStore } from "../state/setting-store/location.setting.store";
+import { AppRootState } from "../state/stores";
 
 const selector = (App:AppRootState) => App.locationMember;
 
 const LocationUseCase = ():LocationSettiingStore=>{
     const {
-        locationData
+        locationData,
+        detailLocation,
     } = useSelector<
     AppRootState,
     LocationStoreState
@@ -22,6 +19,7 @@ const LocationUseCase = ():LocationSettiingStore=>{
     const GetLocationMember = useCallback(()=>LocationAction.getLocationMember()(dispatch),[dispatch])
     return{
        locationData,
+       detailLocation,
 
        GetLocationMember,
     }

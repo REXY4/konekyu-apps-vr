@@ -7,9 +7,15 @@ import Colors from "../../../../components/colors/Colors";
 import ButtonLink from "../../../../components/buttons/ButtonLink";
 import FontStyle from "../../../../types/FontTypes";
 import AuthUseCase from "../../../../use-case/auth.usecase";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import axios from "axios";
+import { BaseUrl } from "../../../../../config/api";
+import { useDispatch } from "react-redux";
+import AuthActionType from "../../../../state/actions-type/auth.type";
 
 const LoginForm = () =>{
     const {AuthLogin} = AuthUseCase();
+    const dispatch = useDispatch();
     const [disableButton, setDisableButton] = useState<boolean>(true);
     const [form, setForm] = useState<RequestLoginEntities>({
         username:   "",
@@ -36,6 +42,48 @@ const LoginForm = () =>{
         console.log("check data")
         await AuthLogin(form);
     }
+
+    const googleLogin = async () => {
+        return GoogleSignin.hasPlayServices().then((hasPlayService) => {
+             if (hasPlayService) {
+                 GoogleSignin.signIn().then(async (userInfo) => {
+                     const getToken = await GoogleSignin.getTokens();
+                     console.log("check token ", getToken.accessToken)
+                     const response = await axios.post(`${BaseUrl.baseProd}/auth/login/google/callback?token=${getToken.accessToken}`);
+                     if(response.status == 200){
+                        dispatch({
+                            type : AuthActionType.LOGIN,
+                            payload : response.data.result
+                        })
+                     };
+                 }).catch((e) => {
+                    GoogleSignin.revokeAccess();
+                     // dispatch({
+                     //     type: SettingActionType.SET_ALERT,
+                     //     message: e.message,
+                     //     status: 'error',
+                     //     condition: true,
+                     // });
+                 });
+             }
+         }).catch((e) => {
+             // dispatch({
+             //     type: SettingActionType.SET_ALERT,
+             //     message: e.message,
+             //     status: 'error',
+             //     condition: true,
+             // });
+         });
+    };
+
+    useEffect(()=>{
+        GoogleSignin.configure({
+            iosClientId: "670486900808-4f58ur7enln3p623aqofo2q0ujpdkpba.apps.googleusercontent.com", 
+            offlineAccess: false,
+        })  
+    },[])
+
+
     return (
         <View style={{marginTop : 20}}>
             <View style={{
@@ -97,7 +145,9 @@ const LoginForm = () =>{
                 }}/>
             </View>
             <View>
-                <TouchableOpacity style={{
+                <TouchableOpacity 
+                onPress={googleLogin}
+                style={{
                     backgroundColor : Colors.ResColor.grayOpacity,
                     borderRadius : 10,
                     height : 50,

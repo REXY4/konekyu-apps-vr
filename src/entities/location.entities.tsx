@@ -10,6 +10,17 @@ export interface GetLocationEntities {
 }
 
 
+export interface MyLocationEntities {
+    accuracy: number
+    altitude: number
+    bearing: number
+    latitude:number
+    longitude: number
+    provider: string
+    speed : number
+    time : number
+}
+
 export interface GetMemberLocation {
     id:        number;
     parent_id: number;
@@ -38,5 +49,4 @@ export interface PictureLoc {
 export interface GetRekomendLocationEn {
         location : GetMemberLocation,
         distance : number
-      
 }

@@ -1,4 +1,4 @@
-import { Image, Text, View, Dimensions } from "react-native"
+import { Image, Text, View, Dimensions, TouchableOpacity } from "react-native"
 import { GetLocationEntities, GetMemberLocation } from "../../../entities/location.entities";
 import Colors from "../../../components/colors/Colors";
 import FontStyle from "../../../types/FontTypes";
@@ -42,14 +42,20 @@ const CardListMap = (props:GetMemberLocation) =>{
             </View>
             <View style={{
                 marginLeft : 10,
+                flexDirection  :"row",
                 flexWrap : "wrap",
-                width : "40%"
+                width : "38%",
             }}>
                 <Text style={{
                     fontFamily : FontStyle.BOLD,
                     color : Colors.ResColor.black,
-                    fontSize : 18,
-                }}>{props.name} ({getRange()})</Text>
+                    fontSize : 14,
+                }}>{props.name} <Text style={{color : Colors.ResColor.yellow}}>({getRange()})</Text></Text>
+                <Text style={{
+                    fontSize  :12,
+                    color : Colors.ResColor.gray,
+                    fontFamily : FontStyle.REGULER,
+                }}>{props.address}</Text>
             </View>
         </View>
     )

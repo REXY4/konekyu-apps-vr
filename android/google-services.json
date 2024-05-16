@@ -1,0 +1,72 @@
+{
+  "project_info": {
+    "project_number": "670486900808",
+    "project_id": "inetyu",
+    "storage_bucket": "inetyu.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:670486900808:android:86d2de2d3c0413cb9d687d",
+        "android_client_info": {
+          "package_name": "id.wahana.inetyu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "670486900808-4cebv5oq7b6slsmjp0h3baj0293r7tpg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.wahana.inetyu",
+            "certificate_hash": "c64717c12f577113d0c32c3a00c9fd11e75c9373"
+          }
+        },
+        {
+          "client_id": "670486900808-4f58ur7enln3p623aqofo2q0ujpdkpba.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.wahana.inetyu",
+            "certificate_hash": "72b1039ccb9dcf8f8ab91e8d5af5950a0c9852a3"
+          }
+        },
+        {
+          "client_id": "670486900808-qtv7htpjm2jocvv6g6cneik8o6qm0h2n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.wahana.inetyu",
+            "certificate_hash": "f554187fe5351fd5cf4849f3399d8f237301c8eb"
+          }
+        },
+        {
+          "client_id": "670486900808-fuqc1lnbupvfeuhqtlaq474bva3la2kp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDfjarDZtDHRZ2Tw1fVo0Y0BuI2qVW5yJo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "670486900808-fuqc1lnbupvfeuhqtlaq474bva3la2kp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "670486900808-3jrn45fveo5apfb6idmfie3rks82rcs2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "id.wahana.inetyu",
+                "app_store_id": "1593162643"
+              }
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-1927325038483817~4197182220"
+    }
+  ],
+  "configuration_version": "1"
+}

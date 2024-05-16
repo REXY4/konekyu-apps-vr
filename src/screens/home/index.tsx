@@ -1,24 +1,28 @@
 import axios from "axios";
 import { Dimensions, ImageBackground, SafeAreaView, ScrollView, StatusBar, View, StyleSheet  } from "react-native";
 import { BaseUrl, configWithJwt } from "../../../config/api";
-import CarrouselPrimary from "../../components/carrousels/CarrouselPrimary";
+import  CarrouselPrimary from "../../components/carrousels/CarrouselPrimary"
 import Colors from "../../components/colors/Colors";
-import AuthUseCase from "../../use-case/auth.usecase";
-import { useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { ArticleDash, DashboardSlider } from "../../entities/dashboard.entities";
 import Connect from "./components/Connect";
 import VoucherDash from "./components/Voucher";
 import HostpotTerdekat from "./components/hostpotTerdekat";
 import ArtikelData from "./components/ArtikelData";
-import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import LocationUseCase from "../../use-case/location.usecase";
-import MapLocation from "../locations/components/MapLocation";
+import MapLoader from "../../components/loading/MapLoader";
+import GetLocation from "react-native-get-location";
 const height = Dimensions.get("window").height;
+
+const MapLocation = lazy(()=>import("../locations/components/MapLocation"))
 
 const HomeScreen = () =>{
     const [sliderData, setSliderData] = useState<Array<DashboardSlider> | null>(null)
     const [artikelData, setArtikelData] = useState<Array<ArticleDash> | null>(null)
+    const [myLocation, setMyLocation] = useState<any|null>(null)
+    
     const {GetLocationMember}= LocationUseCase();
+
     const getSlideData = async () =>{
         try{
             const config = await configWithJwt();
@@ -32,6 +36,21 @@ const HomeScreen = () =>{
             console.log("check err",err)
         }
     }
+
+
+    const handleGetLocation =async ()=>{
+        await  GetLocation.getCurrentPosition({
+          enableHighAccuracy: false,
+          timeout: 6000,
+        })
+        .then(location => {
+          setMyLocation(location);
+        })
+        .catch(error => {
+            const { code, message } = error;
+            console.warn(code, message);
+        })
+     }
 
     const getArtikel = async () =>{
         try{
@@ -50,6 +69,7 @@ const HomeScreen = () =>{
     useEffect(()=>{
         getSlideData();
         getArtikel();
+        handleGetLocation()
         GetLocationMember();
     },[]);
 
@@ -71,7 +91,8 @@ const HomeScreen = () =>{
             }}
             source={require("../../../assets/images/appbar_dashboard.png")}>
                 {sliderData !== null ?
-                <CarrouselPrimary data={sliderData}/> : null}
+                    <CarrouselPrimary data={sliderData}/>
+                 : null}
             </ImageBackground>
             <View style={{
                 paddingTop : 15,
@@ -100,7 +121,9 @@ const HomeScreen = () =>{
                     backgroundColor  :Colors.ResColor.grayOpacity,
                     marginBottom : 20,
                 }}>
-                  <MapLocation/>
+                    <Suspense fallback={<MapLoader/>}>
+                        <MapLocation myLocation={myLocation}/>
+                  </Suspense>
                 </View>
             </View>
             </View>

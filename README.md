@@ -84,3 +84,8 @@ To learn more about React Native, take a look at the following resources:
 npm i react-native-wifi-reborn
 npm i react-native-network-info
 ```
+
+mapbox Api 
+```
+pk.eyJ1Ijoicml6a2libmV0MTcxMiIsImEiOiJjbHcwZG1kODkxdGtyMmtwamt3aHgycHppIn0.LYJVijNGG93VA7JrgENfdw
+```
