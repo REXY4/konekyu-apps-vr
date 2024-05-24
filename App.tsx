@@ -6,6 +6,8 @@ import { PersistGate } from "redux-persist/integration/react";
 import { navigationRef } from "./src/routers/NavRef";
 
 export default function App(){
+ 
+
   return (
     <Provider store={store}>
       <PersistGate persistor={persistore}>

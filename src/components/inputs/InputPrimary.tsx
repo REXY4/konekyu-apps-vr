@@ -9,9 +9,10 @@ interface Props {
     passwordIcon : boolean,
     onChange(val:string):void
     placeholder:string
+    value:string | undefined
 }
 
-const InputPrimary = ({label, type, passwordIcon, onChange,placeholder}:Props) =>{
+const InputPrimary = ({label, type, passwordIcon, onChange,placeholder, value}:Props) =>{
     const [focus, setFocus] = useState<boolean>(false);
     const [showPassword, setShowPassword] = useState<boolean>(false);
     return (
@@ -25,6 +26,7 @@ const InputPrimary = ({label, type, passwordIcon, onChange,placeholder}:Props) =
         }}>{label}</Text>
         }        
         <TextInput 
+        value={value}
         onChangeText={onChange}
         textContentType="password"
         secureTextEntry={!showPassword}

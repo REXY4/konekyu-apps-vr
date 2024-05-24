@@ -12,13 +12,18 @@ import AuthActionType from '../state/actions-type/auth.type';
 import VoucherScreen from '../screens/voucher';
 import Profiles from '../screens/profiles';
 import LocationScreen from '../screens/locations';
+import LoadingPage from '../screens/onboarding/LoadingPage';
+import SettingUseCase from '../use-case/setting.useCase';
 
 const Tab = createMaterialBottomTabNavigator();
 //"#0074E0"
 export default function MyTabs() {
-
+const {isLoading} = SettingUseCase();
 
   return (
+    <>
+    {isLoading &&
+    <LoadingPage/>}
     <Tab.Navigator
     shifting={false}
     inactiveColor='#A8A8A8'
@@ -89,6 +94,7 @@ export default function MyTabs() {
       }}
       component={Profiles} />
     </Tab.Navigator>
+    </>
   );
 }
 

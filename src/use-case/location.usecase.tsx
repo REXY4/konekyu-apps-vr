@@ -11,17 +11,27 @@ const LocationUseCase = ():LocationSettiingStore=>{
     const {
         locationData,
         detailLocation,
+        detailId,
+        xenditLink,
+        popData,
+        voucherData,
     } = useSelector<
     AppRootState,
     LocationStoreState
     >(selector);
     const dispatch = useDispatch();
     const GetLocationMember = useCallback(()=>LocationAction.getLocationMember()(dispatch),[dispatch])
+    const getConnection = useCallback(()=>LocationAction.getConnection()(dispatch),[dispatch])
     return{
        locationData,
        detailLocation,
-
+       detailId,
+       xenditLink,
+       popData,
+       voucherData,
+       
        GetLocationMember,
+       getConnection,
     }
 }
 

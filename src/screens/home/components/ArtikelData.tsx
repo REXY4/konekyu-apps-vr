@@ -1,14 +1,17 @@
-import { View, Text } from "react-native"
+import { View, Text, TouchableOpacity } from "react-native"
 import FontStyle from "../../../types/FontTypes";
 import Colors from "../../../components/colors/Colors";
 import { ArticleDash } from "../../../entities/dashboard.entities";
 import CardArtikle from "./CardArtikel";
+import { navigate } from "../../../routers/NavRef";
+import ScreenActionType from "../../../routers/types/ScreenActionType";
 
 interface Props {
     data : Array<ArticleDash>
 }
 
 const ArtikelData = ({data}:Props) =>{
+   
     return(
         <View>
             <Text style={{
@@ -32,7 +35,7 @@ const ArtikelData = ({data}:Props) =>{
                         marginBottom  :20,
                     }}>
                         <CardArtikle {...item}/>
-                    </View>
+                 </View>
                 )
             })}
             </View>

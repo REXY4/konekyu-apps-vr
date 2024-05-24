@@ -6,6 +6,7 @@ buildscript {
         targetSdkVersion = 34
         ndkVersion = "26.1.10909125"
         kotlinVersion = "1.9.22"
+        // kotlinVersion = "1.6.1"
     }
     repositories {
         google()
@@ -16,6 +17,16 @@ buildscript {
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
         classpath('com.google.gms:google-services:4.3.3')
+         
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        // Add Appodeal repository
+        maven { url "https://artifactory.appodeal.com/appodeal" }
     }
 }
 

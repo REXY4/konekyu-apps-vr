@@ -5,10 +5,13 @@ import LoginForm from "./components/LoginForm";
 import ButtonLink from "../../../components/buttons/ButtonLink";
 import {  useCallback, useEffect, useState } from "react";
 import RegisterForm from "./components/RegisterForm";
+import LoadingPage from "../../onboarding/LoadingPage";
+import SettingUseCase from "../../../use-case/setting.useCase";
 
 const {width} =  Dimensions.get("window");
 
 const LoginScreen = () =>{
+    const {isLoading} = SettingUseCase();
     const View1 = new Animated.Value(0);
     
     const handleSlide = (t:boolean)=> {
@@ -35,6 +38,8 @@ const LoginScreen = () =>{
            
         }
     }
+
+    console.log("check is loading ", isLoading)
 
     
   
@@ -137,6 +142,8 @@ const LoginScreen = () =>{
             </Animated.View>
 
             </ScrollView>
+            {isLoading &&
+            <LoadingPage/>}
         </SafeAreaView>
     )
 }

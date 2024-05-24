@@ -10,7 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const persistConfig = {
     key: 'root',
     storage: AsyncStorage,
-    //   blacklist: ['setting'],
+    // blacklist: ['setting'],
     whitelist: [
         'auth', 'locationMember'
     ],

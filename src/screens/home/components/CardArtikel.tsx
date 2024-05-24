@@ -2,8 +2,20 @@ import { Image, Text, TouchableOpacity, View } from "react-native"
 import { ArticleDash } from "../../../entities/dashboard.entities";
 import Colors from "../../../components/colors/Colors";
 import FontStyle from "../../../types/FontTypes";
+import { navigate } from "../../../routers/NavRef";
+import ScreenActionType from "../../../routers/types/ScreenActionType";
+import { useDispatch } from "react-redux";
+import LocationActionType from "../../../state/actions-type/location.type";
 
 const CardArtikle = (props:ArticleDash) =>{
+    const dispatch = useDispatch();
+    const handleDetail = () =>{
+        dispatch({
+            type : LocationActionType.DETAIL_ARTICLE,
+            payload : props.id,
+        })
+        navigate(ScreenActionType.ARTIKLE_SCREEN);
+    }
     return (
         <View style={{
             elevation : 3,
@@ -33,11 +45,13 @@ const CardArtikle = (props:ArticleDash) =>{
                  <Text 
                 style={{
                     fontSize : 12,
-                    color : Colors.ResColor.black,
-                    fontFamily :  FontStyle.BOLD
+                    color : Colors.ResColor.gray,
+                    fontFamily :  FontStyle.MEDIUM
                 }}
                 >{props.published_at}</Text>
-                <TouchableOpacity style={{
+                <TouchableOpacity  
+                onPress={handleDetail}
+                style={{
                     borderColor: Colors.ResColor.blue,
                     borderWidth : 1,
                     flexDirection :"row",

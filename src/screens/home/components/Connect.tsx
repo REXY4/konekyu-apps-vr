@@ -2,8 +2,10 @@ import { View, Text  } from "react-native"
 import Colors from "../../../components/colors/Colors"
 import { WifiIcon } from "../../../components/icons/Icon"
 import FontStyle from "../../../types/FontTypes"
+import LocationUseCase from "../../../use-case/location.usecase"
 
 const Connect = ()=>{
+    const {popData} = LocationUseCase();
     const dataExp = [
         {
             id : 0,
@@ -34,7 +36,7 @@ const Connect = ()=>{
                     marginLeft : 10,
                     position : "relative",
                     top : 3,
-                }}>Disconnect</Text>
+                }}>{!popData.connect ? "Disconnect" : "Connected"}</Text>
             </View>
             <View style={{
                 marginTop : 10,

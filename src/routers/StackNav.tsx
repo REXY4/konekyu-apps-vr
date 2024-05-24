@@ -11,12 +11,29 @@ import DetailLocation from '../screens/locations/detailLocation';
 import LocationUseCase from '../use-case/location.usecase';
 import DetailListLocation from '../screens/locations/detaiListLocation';
 import OpenMapLocation from '../screens/locations/OpenMapScreen';
+import ArtikleScreen from '../screens/artikle';
+import ListVoucher from '../screens/voucher/listVoucher';
+import XenditVoucher from '../screens/voucher/VoucherXendit';
+import SearchWifiScreen from '../screens/wifi/searchWifi';
+import SettingUseCase from '../use-case/setting.useCase';
+import LoadingPage from '../screens/onboarding/LoadingPage';
+import ChangePassword from '../screens/profiles/changePassword';
+import EditProfile from '../screens/profiles/editProfile';
 
 const Stack = createStackNavigator();
 
 export default function MyStack() {
   const {isLogin} = AuthUseCase()
-  const {detailLocation} = LocationUseCase();
+  const {detailLocation, getConnection} = LocationUseCase();
+
+  useEffect(()=>{
+    const interval = setInterval(()=>{
+      getConnection()
+      console.log("clear interval")
+    },5000);
+
+    return ()=> clearInterval(interval);
+  },[]);
  
   return (
     <Stack.Navigator>
@@ -118,8 +135,116 @@ export default function MyStack() {
        }}
        name={ScreenActionType.OPEN_MAP_LOCATION}
         component={OpenMapLocation} />
+      <Stack.Screen 
+       options={{
+         headerShown  :true,
+         title :  "Artikel",
+         cardStyle : {
+          backgroundColor : Colors.ResColor.white,
+         },
+         headerTitleStyle: {
+          color : Colors.ResColor.white,
+         },
+         headerTintColor: Colors.ResColor.white,
+         headerStyle: {
+          backgroundColor  :Colors.ResColor.blue,
+         }
+       }}
+       name={ScreenActionType.ARTIKLE_SCREEN}
+        component={ArtikleScreen} />
+
+<Stack.Screen 
+       options={{
+         headerShown  :true,
+         title :  "List Voucher",
+         cardStyle : {
+          backgroundColor : Colors.ResColor.white,
+         },
+         headerTitleStyle: {
+          color : Colors.ResColor.white,
+         },
+         headerTintColor: Colors.ResColor.white,
+         headerStyle: {
+          backgroundColor  :Colors.ResColor.blue,
+         }
+       }}
+       name={ScreenActionType.LIST_VOUCHER}
+        component={ListVoucher} />
+
+<Stack.Screen 
+       options={{
+         headerShown  :true,
+         title :  "List Koneksi",
+         cardStyle : {
+          backgroundColor : Colors.ResColor.white,
+         },
+         headerTitleStyle: {
+          color : Colors.ResColor.white,
+         },
+         headerTintColor: Colors.ResColor.white,
+         headerStyle: {
+          backgroundColor  :Colors.ResColor.blue,
+         }
+       }}
+       name={ScreenActionType.SEARCH_WIFI}
+        component={SearchWifiScreen} />
+
+<Stack.Screen 
+       options={{
+         headerShown  :true,
+         title :  "Pembayaran Voucher",
+         cardStyle : {
+          backgroundColor : Colors.ResColor.white,
+         },
+         headerTitleStyle: {
+          color : Colors.ResColor.white,
+         },
+         headerTintColor: Colors.ResColor.white,
+         headerStyle: {
+          backgroundColor  :Colors.ResColor.blue,
+         }
+       }}
+       name={ScreenActionType.BUY_VOUCHER}
+        component={XenditVoucher} />
+
+<Stack.Screen 
+       options={{
+         headerShown  :true,
+         title :  "Ubah Password",
+         cardStyle : {
+          backgroundColor : Colors.ResColor.white,
+         },
+         headerTitleStyle: {
+          color : Colors.ResColor.white,
+         },
+         headerTintColor: Colors.ResColor.white,
+         headerStyle: {
+          backgroundColor  :Colors.ResColor.blue,
+         }
+       }}
+       name={ScreenActionType.CHANGE_PASSWORD}
+        component={ChangePassword} />
+
+<Stack.Screen 
+       options={{
+         headerShown  :true,
+         title :  "Ubah Profil",
+         cardStyle : {
+          backgroundColor : Colors.ResColor.white,
+         },
+         headerTitleStyle: {
+          color : Colors.ResColor.white,
+         },
+         headerTintColor: Colors.ResColor.white,
+         headerStyle: {
+          backgroundColor  :Colors.ResColor.blue,
+         }
+       }}
+       name={ScreenActionType.EDIT_PROFILE}
+        component={EditProfile} />
         </>
     }
     </Stack.Navigator>
+    
   );
 }

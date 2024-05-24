@@ -43,6 +43,7 @@ const VoucherScreen = () =>{
     return (
         <SafeAreaView style={{
             height : "100%",
+            backgroundColor  :Colors.ResColor.white,
         }}>
             <View style={{
                 padding : 15,

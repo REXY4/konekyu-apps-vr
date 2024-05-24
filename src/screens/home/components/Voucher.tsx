@@ -1,6 +1,8 @@
 import { View, Text, TouchableOpacity } from "react-native"
 import Colors from "../../../components/colors/Colors";
 import FontStyle from "../../../types/FontTypes";
+import { navigate } from "../../../routers/NavRef";
+import ScreenActionType from "../../../routers/types/ScreenActionType";
 
 const VoucherDash = () =>{
     return (
@@ -46,7 +48,9 @@ const VoucherDash = () =>{
                 }}>
                     Belum punya voucher ?
                 </Text>
-                <TouchableOpacity style={{
+                <TouchableOpacity 
+                onPress={()=>navigate(ScreenActionType.LIST_VOUCHER)}
+                style={{
                     backgroundColor : Colors.ResColor.blue,
                     borderRadius : 10,
                     padding : 10,

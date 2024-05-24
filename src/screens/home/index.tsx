@@ -12,6 +12,7 @@ import ArtikelData from "./components/ArtikelData";
 import LocationUseCase from "../../use-case/location.usecase";
 import MapLoader from "../../components/loading/MapLoader";
 import GetLocation from "react-native-get-location";
+import LoadingPage from "../onboarding/LoadingPage";
 const height = Dimensions.get("window").height;
 
 const MapLocation = lazy(()=>import("../locations/components/MapLocation"))
@@ -21,8 +22,7 @@ const HomeScreen = () =>{
     const [artikelData, setArtikelData] = useState<Array<ArticleDash> | null>(null)
     const [myLocation, setMyLocation] = useState<any|null>(null)
     
-    const {GetLocationMember}= LocationUseCase();
-
+    const {GetLocationMember, getConnection}= LocationUseCase();
     const getSlideData = async () =>{
         try{
             const config = await configWithJwt();
@@ -37,6 +37,14 @@ const HomeScreen = () =>{
         }
     }
 
+    useEffect(()=>{
+        const interval = setInterval(()=>{
+          getConnection()
+          console.log("clear interval")
+        },5000);
+    
+        return ()=> clearInterval(interval);
+      },[]);
 
     const handleGetLocation =async ()=>{
         await  GetLocation.getCurrentPosition({
@@ -72,6 +80,7 @@ const HomeScreen = () =>{
         handleGetLocation()
         GetLocationMember();
     },[]);
+    // { }
 
     return (
         <SafeAreaView style={{
@@ -91,7 +100,7 @@ const HomeScreen = () =>{
             }}
             source={require("../../../assets/images/appbar_dashboard.png")}>
                 {sliderData !== null ?
-                    <CarrouselPrimary data={sliderData}/>
+                <CarrouselPrimary data={sliderData}/> 
                  : null}
             </ImageBackground>
             <View style={{
@@ -142,6 +151,7 @@ const HomeScreen = () =>{
             </View>
            
             </ScrollView>
+           
         </SafeAreaView>
     )
 }

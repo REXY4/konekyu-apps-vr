@@ -1,4 +1,4 @@
-import { Image, ImageBackground, SafeAreaView, ScrollView, Text, TouchableOpacity } from "react-native"
+import { Image, ImageBackground, Linking, SafeAreaView, ScrollView, Text, TouchableOpacity } from "react-native"
 import { View } from "react-native";
 import Colors from "../../components/colors/Colors";
 import AuthUseCase from "../../use-case/auth.usecase";
@@ -80,7 +80,7 @@ const Profiles = () =>{
                             fontFamily :FontStyle.MEDIUM,
                             color : Colors.ResColor.blue,
                             fontSize : 21,
-                        }}>{ GetName("Rizki Bnet Id") }</Text>
+                        }}>{ GetName(String(authResult?.name)) }</Text>
                         </View>
                     </View>
                     <View>
@@ -116,7 +116,7 @@ const Profiles = () =>{
                 elevation : 3,
                 paddingTop : 20,
             }}>
-                <TouchableOpacity style={{
+                {/* <TouchableOpacity style={{
                     flexDirection :"row",
                     justifyContent : "space-between",
                     alignItems  :"center",
@@ -143,8 +143,10 @@ const Profiles = () =>{
                     }}> Riwayat Wifi</Text>
                     </View> 
                     <ArrowRightIcon color={Colors.ResColor.gray} size={18}/>
-                </TouchableOpacity>
-                <TouchableOpacity style={{
+                </TouchableOpacity> */}
+                <TouchableOpacity 
+                onPress={()=>navigate(ScreenActionType.LIST_LOCATION)}
+                style={{
                     flexDirection :"row",
                     justifyContent : "space-between",
                     alignItems  :"center",
@@ -203,7 +205,9 @@ const Profiles = () =>{
                 paddingTop : 20,
                 zIndex : 5
             }}>
-                <TouchableOpacity style={{
+                <TouchableOpacity 
+                onPress={()=>navigate(ScreenActionType.VOUCHER)}
+                style={{
                     flexDirection :"row",
                     justifyContent : "space-between",
                     alignItems  :"center",
@@ -232,7 +236,9 @@ const Profiles = () =>{
                     </View> 
                     <ArrowRightIcon color={Colors.ResColor.gray} size={18}/>
                 </TouchableOpacity>
-                <TouchableOpacity style={{
+                <TouchableOpacity 
+                onPress={()=>navigate(ScreenActionType.EDIT_PROFILE)}
+                style={{
                     flexDirection :"row",
                     justifyContent : "space-between",
                     alignItems  :"center",
@@ -260,7 +266,9 @@ const Profiles = () =>{
                     </View> 
                     <ArrowRightIcon color={Colors.ResColor.gray} size={18}/>
                 </TouchableOpacity>
-                <TouchableOpacity style={{
+                <TouchableOpacity 
+                onPress={()=>navigate(ScreenActionType.CHANGE_PASSWORD)}
+                style={{
                     flexDirection :"row",
                     justifyContent : "space-between",
                     alignItems  :"center",
@@ -315,7 +323,9 @@ const Profiles = () =>{
                 paddingTop : 20,
                 zIndex : 5
             }}>
-                <TouchableOpacity style={{
+                <TouchableOpacity 
+                onPress={()=>Linking.openURL("https://docs.google.com/forms/d/e/1FAIpQLScW908vfFY8xVZA8g5iScZtSRxVGFFDB-6W6fHkRlpshYimCw/viewform")}
+                style={{
                     flexDirection :"row",
                     justifyContent : "space-between",
                     alignItems  :"center",

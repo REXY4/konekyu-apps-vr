@@ -59,7 +59,6 @@ const LocationScreen = () =>{
    }
 
 
-
   useEffect(()=>{
     const interval = setInterval(async () =>{
       await handleGetLocation()
@@ -81,7 +80,7 @@ const LocationScreen = () =>{
               backgroundColor  :"black"
             }}>
               <Suspense fallback={
-                             <MapLoader/>
+                     <MapLoader/>
               }>
                 {locationRekomendasi && 
               <MapDetailLocation myLocation={{

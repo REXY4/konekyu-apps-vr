@@ -47,7 +47,8 @@ const ListLocationScreen = ()=>{
         navigate(ScreenActionType.DETAIL_LIST_LOCATION);  
         //   navigate(ScreenActionType.DETAIL_LOCATION_DIRECTION)
      }
-  
+     
+     console.log(myLocation)
   
     useEffect(()=>{
       const interval = setInterval(async () =>{
@@ -89,12 +90,12 @@ const ListLocationScreen = ()=>{
                     paddingTop : 50,
                     backgroundColor  :Colors.ResColor.white,
                 }}>
-                    {locationData && locationData.map((item:GetMemberLocation)=>{
+                    {locationData && myLocation && locationData.map((item:GetMemberLocation)=>{
                         return (
                             <TouchableOpacity onPress={()=>handleDetailData(item)} style={{
                                 marginBottom : 2,
                             }}>
-                                <CardListMap {...item}/>
+                                <CardListMap props={item} lokasiSementara={myLocation}/>
                             </TouchableOpacity>
                         )
                     })}

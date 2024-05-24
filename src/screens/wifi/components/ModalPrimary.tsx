@@ -28,7 +28,7 @@ const ModalPrimary = ({modalVisible}:Props) => {
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Pastikan Sudah Terhubung ke jaringan konekyu</Text>
+            <Text style={styles.modalText}>Pastikan kamu sudah terhubung ke jaringan koneksi <Text style={{color : Colors.ResColor.yellow}}>Konekyu</Text>!</Text>
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => {
@@ -36,7 +36,6 @@ const ModalPrimary = ({modalVisible}:Props) => {
                   type : AuthActionType.MODAL_ALERT,
                   modal : false
                 })
-                navigate(ScreenActionType.HOME);
               }}>
               <Text style={styles.textStyle}>Ok</Text>
             </Pressable>

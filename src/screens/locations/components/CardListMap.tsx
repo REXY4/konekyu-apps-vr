@@ -5,14 +5,14 @@ import FontStyle from "../../../types/FontTypes";
 import { calculateDistance } from '../../../utils/haverSine';
 
 const {width} =  Dimensions.get("screen");
-
-const CardListMap = (props:GetMemberLocation) =>{
-    const lokasiSementara = {
-        latitude :-6.314508510022441,
-        longitude : 107.30258366595463,
-      }
+interface Props{ 
+    props :GetMemberLocation,
+    lokasiSementara : any
+}
+const CardListMap = ({props,lokasiSementara}:Props) =>{
+   
       const getRange = () =>{
-            const jarak = Math.floor(calculateDistance(lokasiSementara.latitude, lokasiSementara.longitude, parseFloat(props.latitude), parseFloat(props.longitude) * 1000)) 
+            const jarak = calculateDistance(lokasiSementara.latitude, lokasiSementara.longitude, parseFloat(props.latitude), parseFloat(props.longitude)) * 1000 
             if(jarak > 1000){
                 return Math.floor(jarak / 1000) + " km"
             }else{

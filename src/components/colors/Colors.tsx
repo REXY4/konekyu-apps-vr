@@ -6,7 +6,8 @@ enum ResColor {
     grayOpacity = "#E5E5E5",
     darkBlue ="#0050A0",
     lightBlue = "#ADD8E6",
-    yellow = "#FEB401"
+    yellow = "#FEB401",
+    red = "#dc3545",
 }
 
 export default {ResColor}

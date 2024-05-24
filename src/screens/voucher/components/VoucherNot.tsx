@@ -3,6 +3,8 @@ import { VoucherNotAvailIcon } from "../../../components/icons/Icon";
 import Colors from "../../../components/colors/Colors";
 import FontStyle from "../../../types/FontTypes";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { navigate } from "../../../routers/NavRef";
+import ScreenActionType from "../../../routers/types/ScreenActionType";
 
 const VoucherNot = () =>{
     return(
@@ -25,7 +27,9 @@ const VoucherNot = () =>{
                     width : 200,
                     fontFamily : FontStyle.MEDIUM,
                 }}>Kamu belum punya voucher ?</Text>
-                <TouchableOpacity style={{
+                <TouchableOpacity 
+                onPress={()=>navigate(ScreenActionType.LIST_VOUCHER)}
+                style={{
                     backgroundColor  :Colors.ResColor.blue,
                     height : 40,
                     borderRadius : 10,
