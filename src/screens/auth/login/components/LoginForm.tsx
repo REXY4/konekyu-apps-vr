@@ -9,12 +9,15 @@ import FontStyle from "../../../../types/FontTypes";
 import AuthUseCase from "../../../../use-case/auth.usecase";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import axios from "axios";
-import { BaseUrl } from "../../../../../config/api";
+import { BaseUrl, configHeaderPrimary } from "../../../../../config/api";
 import { useDispatch } from "react-redux";
 import AuthActionType from "../../../../state/actions-type/auth.type";
+import LocationUseCase from "../../../../use-case/location.usecase";
+import SettingActionType from "../../../../state/actions-type/setting.type";
 
 const LoginForm = () =>{
     const {AuthLogin} = AuthUseCase();
+    const {popData} = LocationUseCase();
     const dispatch = useDispatch();
     const [disableButton, setDisableButton] = useState<boolean>(true);
     const [form, setForm] = useState<RequestLoginEntities>({
@@ -39,7 +42,6 @@ const LoginForm = () =>{
     },[form.password, form.username])
 
     const HandleSubmit = async () =>{
-        console.log("check data")
         await AuthLogin(form);
     }
 
@@ -49,7 +51,9 @@ const LoginForm = () =>{
                  GoogleSignin.signIn().then(async (userInfo) => {
                      const getToken = await GoogleSignin.getTokens();
                      console.log("check token ", getToken.accessToken)
-                     const response = await axios.post(`${BaseUrl.baseProd}/auth/login/google/callback?token=${getToken.accessToken}`);
+                     console.log(`${"https://konekyu.id"}/auth/login/google/callback?token=${getToken.accessToken}`);
+                     const response = await axios.post(`${BaseUrl.baseProd}/auth/login/google/callback?token=${getToken.accessToken}`,{}, configHeaderPrimary);
+                     console.log("check sussccess ", response.data);
                      if(response.status == 200){
                         dispatch({
                             type : AuthActionType.LOGIN,
@@ -57,22 +61,25 @@ const LoginForm = () =>{
                         })
                      };
                  }).catch((e) => {
+                    console.log(e.response.data.message);
                     GoogleSignin.revokeAccess();
-                     // dispatch({
-                     //     type: SettingActionType.SET_ALERT,
-                     //     message: e.message,
-                     //     status: 'error',
-                     //     condition: true,
-                     // });
+                     dispatch({
+                         type: SettingActionType.SET_ALERT,
+                         message: e.response.data.message,
+                         status: 'error',
+                         condition: true,
+                     });
                  });
              }
          }).catch((e) => {
-             // dispatch({
-             //     type: SettingActionType.SET_ALERT,
-             //     message: e.message,
-             //     status: 'error',
-             //     condition: true,
-             // });
+            console.log(e)
+            GoogleSignin.revokeAccess();
+             dispatch({
+                 type: SettingActionType.SET_ALERT,
+                 message: e.response.data.message,
+                 status: 'error',
+                 condition: true,
+             });
          });
     };
 
@@ -90,14 +97,15 @@ const LoginForm = () =>{
                 marginBottom : 15,
             }}>
             <InputPrimary 
-            placeholder="Masukan email"
-            onChange={(val:string)=>handleChange("username", val)}
-            passwordIcon={false} type="email-address" label="Email"/>
+                    placeholder="Masukan email"
+                    onChange={(val: string) => handleChange("username", val)}
+                    passwordIcon={false} type="email-address" label="Email" value={form.username}/>
             </View>
             <View style={{
                 marginBottom :15,
             }}>
                 <InputPrimary
+                value={form.password}
                 placeholder="Masukan kata sandi"
                 onChange={(val:string)=>handleChange("password", val)}
                 passwordIcon type="default" label="Kata sandi"/>

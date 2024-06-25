@@ -28,6 +28,7 @@ export interface GetMemberLocation {
     address:   string;
     latitude:  string;
     longitude: string;
+    distance : string;
     logo:      null;
     pictures:  PictureLoc[];
     parent:    Parent;

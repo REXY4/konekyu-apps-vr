@@ -145,7 +145,7 @@ const RegisterForm = () =>{
                 <InputPrimary
                 placeholder="Masukan nama lengkap"
                 onChange={(val:string)=>handleChange("name", val)}
-                passwordIcon={false} type="default" label="Nama Lengkap"/>
+                passwordIcon={false} type="visible-password" label="Nama Lengkap"/>
             </View>
             <View style={{
                 marginBottom : 15,

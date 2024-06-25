@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Alert, Modal, StyleSheet, Text, Pressable, View} from 'react-native';
+import {Alert, Modal, StyleSheet, Text, Pressable, View, Image} from 'react-native';
 import FontStyle from '../../../types/FontTypes';
 import Colors from '../../../components/colors/Colors';
 import { goBack, navigate } from '../../../routers/NavRef';
@@ -26,8 +26,14 @@ const ModalVoucher = ({modalVisible, setModal, name, onPress}:Props) => {
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Silahkan klik beli untuk melanjutkan pembelian voucher <Text style={{
-                color : Colors.ResColor.yellow,
+            <Image source={require("../../../../assets/icons/iconVo.png")} style={{
+              width : 40,
+              height :40,
+              objectFit : "fill",
+              marginBottom : 10,
+            }}/>
+            <Text style={styles.modalText}>Silahkan klik beli untuk melanjutkan pembelians voucher <Text style={{
+                color : Colors.ResColor.blue,
             }}>{name}</Text>!</Text>
             <View style={{
                 flexDirection  :"row",
@@ -42,7 +48,7 @@ const ModalVoucher = ({modalVisible, setModal, name, onPress}:Props) => {
                 // })
                 // navigate(ScreenActionType.HOME);
               }}>
-              <Text style={styles.textStyle}>Batal</Text>
+              <Text style={styles.textStyle}>Batalkan</Text>
             </Pressable>
             <Pressable
               style={[styles.button, styles.buttonClose]}
@@ -80,7 +86,8 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   button: {
-    borderRadius: 20,
+    borderRadius: 10,
+    width : "45%",
     padding: 10,
     elevation: 2,
   },

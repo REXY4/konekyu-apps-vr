@@ -10,6 +10,7 @@ type SettingStoreState = Omit<
 >
 
 const INITIAL_STATE: SettingStoreState = {
+    splashScreen : false,
     isLoading : false,
     alert : {
         status : "success",
@@ -25,6 +26,11 @@ const SettingReducers = (state: SettingStoreState | any = INITIAL_STATE, action:
                 ...state,
                 isLoading : action.payload
             }
+        case SettingActionType.SET_SPLASH_SCREEN:
+            return {
+                ...state,
+                splashScreen : action.payload,
+            }    
         case SettingActionType.SET_ALERT:
             return {
                 ...state,

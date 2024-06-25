@@ -17,10 +17,10 @@ const {width} = Dimensions.get("screen");
 
 interface Props {
   myLocation : MyLocationEntities
+  locationData : Array<GetMemberLocation>
 }
 
-const MapLocation = ({myLocation}:Props) =>{
-  const {locationData} = LocationUseCase();
+const MapLocationSecond = ({myLocation, locationData}:Props) =>{
   const {authResult} = AuthUseCase();
 
 
@@ -155,4 +155,4 @@ const styles = StyleSheet.create({
    });
    
 
-export default React.memo(MapLocation);
+export default React.memo(MapLocationSecond);

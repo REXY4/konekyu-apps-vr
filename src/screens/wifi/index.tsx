@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { SafeAreaView,View , Text, Image, TouchableOpacity, Dimensions, Linking,ScrollView} from "react-native";
+import { SafeAreaView,View , Text, Image, TouchableOpacity, Dimensions, Linking,ScrollView, Clipboard} from "react-native";
 import { useDispatch } from "react-redux";
 import Colors from "../../components/colors/Colors";
 import AuthActionType from "../../state/actions-type/auth.type";
@@ -16,6 +16,7 @@ import ModalConnection from "./components/ModalConnection";
 import AdsenseBanner from "../../components/adsense/adsenseBanner";
 import { DevSettings } from 'react-native';
 const {height} = Dimensions.get("screen")
+import DeviceInfo from 'react-native-device-info'; 
 import {
     Appodeal,
     AppodealAdType,
@@ -27,54 +28,36 @@ import {
     AppodealRewardedEvent,
     AppodealSdkEvent
   } from 'react-native-appodeal';
-import { BaseUrl, configWithJwt } from "../../../config/api";
+import { BaseUrl, configWithJwt, configWithOpenGuest } from "../../../config/api";
 import axios from "axios";
 import appodeal from "react-native-appodeal/src/RNAppodeal";
 import InputPrimary from "../../components/inputs/InputPrimary";
 import ButtonLink from "../../components/buttons/ButtonLink";
-import LoadingPage from "../onboarding/LoadingPage";
 import SettingUseCase from "../../use-case/setting.useCase";
 import SettingActionType from "../../state/actions-type/setting.type";
 import LocationUseCase from "../../use-case/location.usecase";
 import { AlertEntities } from "../../state/setting-store/setting.store";
 import AlertPrimary from "../../components/alert/AlertPrimary";
 import LocationActionType from "../../state/actions-type/location.type";
+import { initializeAppodeal } from "../../utils/appodealConfig";
+import { Path, Svg } from "react-native-svg";
   
-  const tokenAdsense=  {
-    android : "a83e11e2d2c38c1262c56578aba658ff3c1160bdd24c2f4a"
-  }
-
-  const adTypes = AppodealAdType.INTERSTITIAL | AppodealAdType.REWARDED_VIDEO | AppodealAdType.BANNER;
-Appodeal.initialize(tokenAdsense.android, adTypes)
-
-
-
-Appodeal.addEventListener(AppodealInterstitialEvent.LOADED, (event: any) =>
-    console.log("Interstitial loaded. Precache: ", event.isPrecache)
-);
-Appodeal.addEventListener(AppodealInterstitialEvent.SHOWN, () => 
-    console.log("Interstitial shown")
-);
-Appodeal.addEventListener(AppodealInterstitialEvent.EXPIRED, () =>
-    console.log("Interstitial expired")
-);
-Appodeal.addEventListener(AppodealInterstitialEvent.CLICKED, () =>
-    console.log("Interstitial was clicked")
-);
-
-Appodeal.addEventListener(AppodealInterstitialEvent.FAILED_TO_LOAD, () =>
-    console.log("Interstitial failed to load")
-);
-Appodeal.addEventListener(AppodealInterstitialEvent.FAILED_TO_SHOW, () =>
-    console.log("Interstitial failed to show")
-);
+export const IconPaste = () =>{
+    return (
+        <Svg  width="24" height="24" viewBox="0 0 24 24">
+            <Path fill="gray" d="M9 4h6v2H9zm11 7h-7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2"/>
+            <Path fill="gray" d="M21 9V6a2 2 0 0 0-2-2h-2a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4v-9a2 2 0 0 1 2-2zM9 6V4h6v2z"/>
+            </Svg>
+    )
+} 
 
 
-
-    
 const WifiScreen = () =>{
+    const [status, setStatus] = useState<boolean>(false);
     const  {modal, authResult} = AuthUseCase();
+    const [statusModal, setStatusModal] = useState<boolean>(false);
     const [connection, setConnection] = useState<boolean>(false);
+    const [mac, setMac] = useState<string>("");
     const {isLoading, alert} = SettingUseCase();
     const [wifiList, setWifiList] = useState<Array<WifiEntry> | []>([])
     const [wifiSSID, setWIFISSID] = useState<string>('');
@@ -82,66 +65,181 @@ const WifiScreen = () =>{
     const [valOn, setValOn] =  useState<boolean>(false);
     const [voucherVal, setVoucherVal] = useState<string>("");
     const dispatch =  useDispatch();
-    const {popData} = LocationUseCase();
+    const {popData, getConnection} = LocationUseCase();
 
-    const OpenAdsense = () =>{
-    //     if(popData.connect){
 
-    //     Appodeal.addEventListener(AppodealSdkEvent.INITIALIZED, () =>console.log("init main"));
-
-    //     Appodeal.addEventListener(AppodealInterstitialEvent.SHOWN, () => 
-    //     console.log("Interstitial shown")
-    // );
-        dispatch({
+    const handleFail = async () =>{
+        await dispatch({
             type : SettingActionType.SET_LOADING,
-            payload : true
+            payload : false,
         })
-        Appodeal.setUserId(String(authResult?.id))
-        Appodeal.setCustomStateValue(17, 'appodeal_user_age');
-        Appodeal.setCustomStateValue(25, 'levels_played');
-        Appodeal.setCustomStateValue(10, 'user_rank');
-        Appodeal.setCustomStateValue(true, 'paid');
-        Appodeal.setExtrasValue("some value", 'attribuition_id');
-        Appodeal.show(AppodealAdType.BANNER_TOP)
-         Appodeal.show(AppodealAdType.INTERSTITIAL, 'your_placement')
-         Appodeal.addEventListener(AppodealInterstitialEvent.CLOSED, handleInterstitialClosed);
-    //  }else{
-    //     dispatch({
-    //         type : AuthActionType.MODAL_ALERT,
-    //         modal : true
-    //     })
-    //  }
+        await dispatch({
+            type : SettingActionType.SET_ALERT,
+            isOpen : true,
+            status : "error",
+            message : "gagal memuat iklan!"
+        }) 
+    }
+
+    const OpenAdsense = async () =>{
+        setStatusModal(false);
+        try{
+            if(popData.connect){
+                dispatch({
+                    type : SettingActionType.SET_LOADING,
+                    payload : true,
+                })
+                const linloginTrial = `${BaseUrl.baseProd}/member/connect-internet-open/trial`;
+                console.log('running on')
+                const loginTrial = await axios.post(linloginTrial,{
+                    "mac" : mac,
+                    "pop_id" : popData.popId
+                },configWithOpenGuest);
+                await axios.get(loginTrial.data.redirect)
+                
+
+                const checkStatus = await axios.get(`${BaseUrl.baseHotspot}/status.html`);
+                // console.log("check status ", checkStatus);
+                if(checkStatus.status == 200){
+                    
+                    const checkInitial = Appodeal.isInitialized(AppodealAdType.INTERSTITIAL);        
+                    if(checkInitial){
+                        const loadedAds = Appodeal.isLoaded(AppodealAdType.INTERSTITIAL)                        
+                        if(loadedAds){
+                               Appodeal.show(AppodealAdType.INTERSTITIAL);
+                            appodeal.addEventListener(AppodealInterstitialEvent.CLOSED, () =>handleInterstitialClosed());
+                        }else{
+                            Appodeal.show(AppodealAdType.REWARDED_VIDEO);
+                            appodeal.addEventListener(AppodealRewardedEvent.CLOSED, () =>handleInterstitialClosed());
+                        }
+                    }
+                }
+         
+                appodeal.addEventListener(AppodealInterstitialEvent.EXPIRED, () =>
+                    handleFail()
+                );
+                 appodeal.addEventListener(AppodealInterstitialEvent.CLICKED, () =>
+                    handleInterstitialClosed()
+                );
+        
+                appodeal.addEventListener(AppodealInterstitialEvent.CLOSED, () =>
+                    handleInterstitialClosed()
+                );
+
+                
+                appodeal.addEventListener(AppodealInterstitialEvent.FAILED_TO_LOAD, () =>
+                    handleFail()
+            );
+            appodeal.addEventListener(AppodealInterstitialEvent.FAILED_TO_SHOW, () =>
+                handleFail()
+                );
+             }else{
+                dispatch({
+                    type : AuthActionType.MODAL_ALERT,
+                    modal : true
+                })
+             }
+        }catch(err){
+            dispatch({
+                type : SettingActionType.SET_ALERT,
+                isOpen : true,
+                status : "error",
+                message : "connect internet failed!"
+            }) 
+        }
+        
+    }
+
+
+    const PasteButton =async () =>{
+            const text = await Clipboard.getString();
+            setVoucherVal(text);
     }
     
  
-    const handleConnect = async () =>{       
+    const handleConnect = async () =>{ 
         try {
-            const config = await configWithJwt();
-            const response = await axios.post(`${BaseUrl.baseProd}/member/connect-internet?pop_id=${popData.popId}`,{
+            const response = await axios.post(`${BaseUrl.baseProd}/member/connect-internet-open?pop_id=${popData.popId}`,{
                 'voucher_code' : null
-            } ,config);
+            } ,configWithOpenGuest);
             if(response.status == 200){
                 dispatch({
                     type : SettingActionType.SET_LOADING,
                     payload : false
                 })
-                Linking.openURL(response.data.redirect)
+                await axios.get(`${BaseUrl.baseHotspot}/logout`);  
+               const connect = await axios.get(response.data.redirect);
+               if(connect.status == 200){
+                if(!statusModal){
+                    dispatch({
+                        type : SettingActionType.SET_ALERT,
+                        isOpen : true,
+                        status : "success",
+                        message : "Selamat kamu sudah terkoneksi dengan Konekyu!"
+                    })
+                    setStatusModal(true); 
+                }
+               } 
             }
-        } catch (error) {
+                } catch (error :any) {
+                    if (error.response) {
+            // Server responded with a status other than 200 range
+            console.log('Response error:', error.response.status, error.response.data);
+            } else if (error.request) {
+            // No response was received from the server
+            console.log('Request error:', error.request);
+            } else {
+            // An error occurred in setting up the request
+            console.log('Error', error.message);
+            }
             dispatch({
                 type : SettingActionType.SET_LOADING,
                 payload : false
             })
-            setTimeout(()=>{
-                DevSettings.reload();
-            },5000);
-            console.log(error);
+            dispatch({
+                type : SettingActionType.SET_ALERT,
+                isOpen : true,
+                status : "error",
+                message : "connect internet gagal!"
+            }) 
+            // setTimeout(()=>{
+            //     DevSettings.reload();
+            // },5000);
+            // console.log(error);
         }
     }
     const handleInterstitialClosed = () => {
             handleConnect();
     };
-    
+
+
+    const checkConnection =  async() =>{
+        try {
+            const checkStatus = await axios.get(`${BaseUrl.baseHotspot}/status.html`);
+            if(checkStatus.status == 200){
+                setStatus(true)
+            }
+        } catch (error) {
+            setStatus(false);
+            // await axios.get(`${BaseUrl.baseHotspot}/logout.html`);
+        }       
+    }
+
+
+    const logoutConnect = async () =>{
+        try {
+            const checkStatus = await axios.get(`${BaseUrl.baseHotspot}/logout.html`);
+            if(checkStatus.status == 200){
+                // setStatus(false)
+                console.log(checkStatus);
+            }
+        } catch (error) {
+            setStatus(false);
+            // await axios.get(`${BaseUrl.baseHotspot}/logout.html`);
+        }    
+    }
+
+
    
 
     const handleConnectVoucher = async () =>{
@@ -149,6 +247,7 @@ const WifiScreen = () =>{
             type : SettingActionType.SET_LOADING,
             payload : true
         })
+        
         try {
             const config = await configWithJwt();
             const response = await axios.post(`${BaseUrl.baseProd}/member/connect-internet?pop_id=${popData.popId}`,{
@@ -182,23 +281,42 @@ const WifiScreen = () =>{
                 })
             }
         } catch (error:any) {
+            console.log(error)
+             dispatch({
+                type : SettingActionType.SET_LOADING,
+                payload : false
+            })
             dispatch({
                 type : SettingActionType.SET_ALERT,
                 isOpen : true,
                 status : "error",
-                message : error.response.data.message.voucher_code[0]
+                message : "Voucher gagal!"
             }) 
-            dispatch({
-                type : SettingActionType.SET_LOADING,
-                payload : false
-            })
+           
         }
     }
+
+
+    useEffect(()=>{
+        initializeAppodeal()
+        DeviceInfo.getAndroidId().then((mac) => {
+            setMac(mac);
+          }).catch((err)=>console.log("get mac error ", err));
+       
+        const interval = setInterval(()=>{
+          checkConnection();
+          getConnection()
+        },5000);
+    
+        return ()=> clearInterval(interval);
+      },[]);
 
   
 
     useEffect(() => {
-            WifiManager.setEnabled(true);
+            // initializeAppodeal();
+            // WifiManager.setEnabled(true);
+
             WifiManager.loadWifiList().then(
                 result =>{
                     setWifiList(result)
@@ -242,40 +360,62 @@ const WifiScreen = () =>{
       },[conditionWif])
      
 
-
-
     return(
         <SafeAreaView style={{
             height : "100%",
             backgroundColor  :Colors.ResColor.white,
         }}>
             <ScrollView>
-                <View style={{
-                    marginBottom : 50,
-                }}>
-            <View style={{
-                backgroundColor :Colors.ResColor.blue,
-                position : "absolute",
-                height : height / 3,
-                width : "100%",
-                borderBottomEndRadius : 200,
-                borderBottomStartRadius : 100,
-            }}/>
-            <View style={{
-                padding : 15,
-                marginTop : 20,
-            }}>
-                <View style={{
+            <View  style={{
+                    paddingTop : 50,
+                    marginBottom  :0,
                     flexDirection :"row",
                     justifyContent : "center",
+                    backgroundColor : Colors.ResColor.blue,
+                    height : height / 4,
+                    borderBottomLeftRadius : 100, 
+                    borderBottomRightRadius : 100, 
+                    elevation : 3,
                 }}>
                     <View style={{
-                        borderRadius : 1000,
+                        position :"absolute",
+                        left : -100,
+                        top : -100,
+                        borderWidth : 30,
+                        borderColor : "#0081FA",
+                        width: 200,
+                        height: 200,
+                        borderRadius : 100,
+
+                    }}/>
+                    <View style={{
+                        position :"absolute",
+                        right : -100,
+                        top : -150,
+                        borderWidth : 30,
+                        borderColor : "#0081FA",
+                        width: 200,
+                        height: 200,
+                        borderRadius : 100,
+
+                    }}/>
+                    <View style={{
+                        borderRadius : 100,
+                        height : 110,
                         backgroundColor  :Colors.ResColor.white,
                     }}>
                     <LoadingKonekyu2 />
                     </View>
                 </View>
+                <View style={{
+                    marginBottom : 50,
+                }}>
+             
+            <View style={{
+                padding : 15,
+                marginTop : 0,
+            }}>
+                
                 <View style={{
                     backgroundColor  :Colors.ResColor.blue,
                     padding : 10,
@@ -294,20 +434,40 @@ const WifiScreen = () =>{
                         color : Colors.ResColor.white,
                         fontFamily : FontStyle.BOLD,
                         fontSize : 14,
-                    }}>{popData.connect ? 'Terhubung {">>"}' : "Bukan Koneksi Konekyu >>"}  </Text>
+                    }}>{popData.connect ? 'Terhubung ' : "Belum Terhubung "}  </Text>
                     <Text style={{color : Colors.ResColor.yellow, fontSize : 18, fontFamily : FontStyle.BOLD}}>
                         <WifiIcon size={18} color={Colors.ResColor.white}/> {wifiSSID}</Text>
                     </View>
                     <View style={{
-                        backgroundColor  :Colors.ResColor.darkBlue,
-                        padding : 10,
+                        backgroundColor  :"#0365BE",
+                        padding : 15,
                         borderRadius : 10,
                     }}>
                     <Text style={{
                         color : Colors.ResColor.white,
                         fontFamily : FontStyle.REGULER,
                         fontSize : 12,
-                    }}>Pastikan terhubung ke jaringan koneksi konekyu sebelum menggunakan feature internet gratis dan voucher!</Text>
+                        width : "80%",
+                    }}>
+                        Ikuti instruksi untuk terhubung jaringan KonekYu:
+                    </Text>
+                    <Text style={{
+                        color : Colors.ResColor.white,
+                        fontFamily : FontStyle.REGULER,
+                        fontSize : 12,
+                        paddingLeft : 5,
+
+                    }}>
+                        1. Klik cari jaringan KonekYu 
+                    </Text>
+                    <Text style={{
+                        color : Colors.ResColor.white,
+                        fontFamily : FontStyle.REGULER,
+                        fontSize : 12,
+                        paddingLeft : 5,
+                    }}>
+                        2 .Hubungkan dengan jaringan KonekYu
+                    </Text>
                     </View>
                     <TouchableOpacity
                     onPress={async () => {
@@ -320,6 +480,7 @@ const WifiScreen = () =>{
                         elevation : 3,
                         marginTop : 15,
                         marginBottom : 10,
+                        height : 50,
                         flexDirection  :"row",
                         alignItems  :"center",
                         justifyContent : "center",
@@ -341,7 +502,10 @@ const WifiScreen = () =>{
                 <View style={{
                     flexDirection  :"row",
                     width  :"100%",
-                    justifyContent : "space-between"
+                    justifyContent : "space-between",
+                    borderWidth : 1,
+                    borderColor : Colors.ResColor.blue,
+                    borderRadius : 12,
                 }}>
             <TouchableOpacity 
                 disabled={!popData}
@@ -349,10 +513,10 @@ const WifiScreen = () =>{
                         setValIn(true)
                 }}
                 style={{
-                    backgroundColor  :valIn ? Colors.ResColor.yellow :Colors.ResColor.gray,
+                    backgroundColor  :valIn ? Colors.ResColor.blue :Colors.ResColor.white,
                     padding : 15,
-                    width : "45%",
-                    borderRadius : 10,
+                    width : "50%",
+                    borderRadius : 12,
                     flexDirection  :"row",
                     justifyContent : "center",
                 }}
@@ -368,10 +532,10 @@ const WifiScreen = () =>{
                     setValIn(false)
                 }}
                 style={{
-                    width : "45%",
+                    width : "50%",
                     flexDirection  :"row",
                     justifyContent : "center",
-                    backgroundColor  :!valIn ? Colors.ResColor.yellow :Colors.ResColor.gray,
+                    backgroundColor  :!valIn ? Colors.ResColor.blue :Colors.ResColor.white,
                     padding : 15,
                     borderRadius : 10,
                 }}
@@ -387,12 +551,35 @@ const WifiScreen = () =>{
                 <View style={{
                     marginTop : 20,
                 }}>
+                <View style={{
+                    flexDirection  :"row",
+                    marginBottom : 15,
+                }}>
+                <View style={{
+                    width : 35,
+                    height : 35,
+                    borderRadius  :5,
+                    elevation :3,
+                    flexDirection :"row",
+                    alignItems  :"center",
+                    justifyContent : "center",
+                    backgroundColor : Colors.ResColor.blue,
+                }}>
+                    <Text style={{
+                         fontFamily : FontStyle.BOLD,
+                         color : Colors.ResColor.white,
+                         fontSize : 12,
+                    }}>FREE</Text>
+                </View>
                 <Text style={{
                     fontFamily : FontStyle.BOLD,
                     color : Colors.ResColor.black,
                     marginBottom : 15,
-                    fontSize : 18,
+                    fontSize : 16,
+                    paddingLeft : 10,
+                    paddingTop : 3,
                 }}>Sambungkan Internet gratis!</Text>
+                </View>
                 <TouchableOpacity 
                 style={{
                     backgroundColor  :Colors.ResColor.blue,
@@ -401,11 +588,11 @@ const WifiScreen = () =>{
                     justifyContent :"center",
                     borderRadius : 10,
                 }}
-                onPress={OpenAdsense}>
+                onPress={()=>status ? logoutConnect(): OpenAdsense() }>
                     <Text style={{
                         fontFamily : FontStyle.BOLD,
                         color : Colors.ResColor.white,
-                    }}>{popData.connect ? "Terhubung" : "Sambungkan"}</Text>
+                    }}>{status ? "Terhubung" : "Hubungkan"}</Text>
                 </TouchableOpacity>
             </View> :
              <View style={{
@@ -428,9 +615,13 @@ const WifiScreen = () =>{
             <View style={{
                 marginBottom  :15,
             }}>
-            <InputPrimary label={undefined} type={"ascii-capable"} passwordIcon={false} onChange={(val:string)=>setVoucherVal(val)} placeholder={"Masukan kode voucher"} />
+            <InputPrimary label={undefined} type={"visible-password"}
+            onPresPaste={PasteButton}
+            value={voucherVal}
+            passwordIcon={false} paste={true} onChange={(val:string)=>setVoucherVal(val)} placeholder={"Masukan kode voucher"} />
             </View>
             <TouchableOpacity 
+            disabled={voucherVal == ""}
             style={{
                 backgroundColor  :voucherVal !== "" ?  Colors.ResColor.blue : Colors.ResColor.gray,
                 padding : 15,
@@ -439,19 +630,19 @@ const WifiScreen = () =>{
                 borderRadius : 10,
             }}
             onPress={()=>{
-                // if(popData.connect && voucherVal !== ""){
+                if(popData.connect && voucherVal !== ""){
                     handleConnectVoucher();
-                // }else{
-                //     dispatch({
-                //         type : AuthActionType.MODAL_ALERT,
-                //         modal : true
-                //     })
-                // }
+                 }else{
+                     dispatch({
+                         type : AuthActionType.MODAL_ALERT,
+                         modal : true
+                     })
+                 }
             }}>
                 <Text style={{
                     fontFamily : FontStyle.BOLD,
                     color : Colors.ResColor.white,
-                }}>{popData.connect ? "Terhubung" : "Sambungkan"}</Text>
+                }}>{popData.connect ? "Terhubung" : "Hubungkan"}</Text>
             </TouchableOpacity>
         </View>
             }

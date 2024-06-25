@@ -2,6 +2,7 @@ import { KeyboardTypeOptions, Text, TextInput, TouchableOpacity } from "react-na
 import Colors from "../colors/Colors";
 import { useState } from "react";
 import { CloseEyesIcon, OpenEyesIcon } from "../icons/Icon";
+import { IconPaste } from "../../screens/wifi";
 
 interface Props { 
     label : string | undefined,
@@ -9,10 +10,12 @@ interface Props {
     passwordIcon : boolean,
     onChange(val:string):void
     placeholder:string
-    value:string | undefined
+    value:string | undefined,
+    paste :boolean,
+    onPresPaste: any
 }
 
-const InputPrimary = ({label, type, passwordIcon, onChange,placeholder, value}:Props) =>{
+const InputPrimary = ({label, type, passwordIcon, onChange,placeholder, value, paste, onPresPaste}:Props) =>{
     const [focus, setFocus] = useState<boolean>(false);
     const [showPassword, setShowPassword] = useState<boolean>(false);
     return (
@@ -64,6 +67,19 @@ const InputPrimary = ({label, type, passwordIcon, onChange,placeholder, value}:P
         }}>
             {showPassword ? <CloseEyesIcon size={24} color={Colors.ResColor.gray}/>:
             <OpenEyesIcon size={24} color={Colors.ResColor.gray}/>}
+        </TouchableOpacity>}
+        {paste &&
+        <TouchableOpacity 
+        onPress={onPresPaste}
+        style={{
+            position : "absolute",
+            bottom : 0,
+            right : 20,
+            flexDirection :"row",
+            alignItems : "center",
+            height : 50
+        }}>
+            <IconPaste/>
         </TouchableOpacity>}
         </>
 

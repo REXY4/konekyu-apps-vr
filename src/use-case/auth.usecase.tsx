@@ -12,7 +12,8 @@ const AuthUseCase = ():AuthSettingStore=>{
     const {
         isLogin,
         authResult,
-        modal
+        modal,
+        voucherVal,
     } = useSelector<
     AppRootState,
     AuthStoreState
@@ -23,6 +24,7 @@ const AuthUseCase = ():AuthSettingStore=>{
         isLogin,
         authResult,
         modal,
+        voucherVal,
         
         AuthLogin,
     }

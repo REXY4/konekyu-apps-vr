@@ -82,7 +82,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         multiDexEnabled true
-        versionCode 70
+        versionCode 71
         versionName "2.0"
     }
     signingConfigs {
@@ -106,7 +106,7 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
@@ -121,13 +121,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-ads:22.2.0'
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.android.support:multidex:1.0.3'
-    implementation("com.appodeal.ads:sdk:3.3.0.0") {
-            exclude group: "com.appodeal.ads.sdk.services", module: "adjust"
-            exclude group: "com.appodeal.ads.sdk.services", module: "appsflyer"
-            exclude group: "com.appodeal.ads.sdk.services", module: "facebook_analytics"
-            exclude group: "com.appodeal.ads.sdk.services", module: "firebase"
-            exclude group: "com.appodeal.ads.sdk.services", module: "sentry_analytics"
-        }
+    implementation 'com.appodeal.ads:sdk:3.3.1.+'
         if (hermesEnabled.toBoolean()) {
             implementation("com.facebook.react:hermes-android")
         } else {

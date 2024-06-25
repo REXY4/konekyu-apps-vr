@@ -7,11 +7,12 @@ import {  useCallback, useEffect, useState } from "react";
 import RegisterForm from "./components/RegisterForm";
 import LoadingPage from "../../onboarding/LoadingPage";
 import SettingUseCase from "../../../use-case/setting.useCase";
+import AlertPrimary from "../../../components/alert/AlertPrimary";
 
 const {width} =  Dimensions.get("window");
 
 const LoginScreen = () =>{
-    const {isLoading} = SettingUseCase();
+    const {isLoading, alert} = SettingUseCase();
     const View1 = new Animated.Value(0);
     
     const handleSlide = (t:boolean)=> {
@@ -39,16 +40,14 @@ const LoginScreen = () =>{
         }
     }
 
-    console.log("check is loading ", isLoading)
-
-    
-  
+      
 
     return (
         <SafeAreaView style={{
             backgroundColor : Colors.ResColor.white,
             height : "100%"
         }}>
+            
             <StatusBar backgroundColor={Colors.ResColor.blue}/>
             <View style={{
                 backgroundColor : Colors.ResColor.blue,

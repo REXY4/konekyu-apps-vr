@@ -1,6 +1,6 @@
 import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 import { SafeAreaView, Text, View, Dimensions, Image ,  ScrollView, TouchableOpacity, Linking} from "react-native";
-const MapDetailLocation = lazy(() => import('./components/MapDetailLocation'));
+const MapSecond = lazy(() => import('./components/mapLocationSecond'));
 import FontStyle from "../../types/FontTypes";
 import Colors from "../../components/colors/Colors";
 import LocationUseCase from "../../use-case/location.usecase";
@@ -12,38 +12,19 @@ import ScreenActionType from "../../routers/types/ScreenActionType";
 import MapLoader from "../../components/loading/MapLoader";import GetLocation from "react-native-get-location";
 import { useDispatch } from "react-redux";
 import LocationActionType from "../../state/actions-type/location.type";
-;
+import axios from "axios";
+import { BaseUrl, configWithOpenGuest } from "../../../config/api";
+import CardMapNews from "./components/CardMapNew";
+import AuthUseCase from "../../use-case/auth.usecase";
 const {height} =  Dimensions.get("screen");
 
 
 const LocationScreen = () =>{
+  const {isLogin} = AuthUseCase();
   const {locationData} = LocationUseCase();
-  const [locationRekomendasi, setLocationRekomendasi] = useState<GetRekomendLocationEn | null>(null)
+  const [locationRekomendasi, setLocationRekomendasi] = useState<Array<GetMemberLocation> | null>(null)
   const [myLocation, setMyLocation] = useState<any|null>(null)
   const dispatch = useDispatch();
-
-
-  const getLocRekomend = async () =>{
-    if(locationData && myLocation){
-      const distances = locationData.map((location:GetMemberLocation) => ({
-        location,
-        distance: calculateDistance(myLocation.latitude, myLocation.longitude, parseFloat(location.latitude), parseFloat(location.longitude)),
-    }));
-    distances.sort((a, b) => a.distance - b.distance);
-      const closestLocation = distances[0].location;
-      const closestDistance = distances[0].distance;
-      setLocationRekomendasi({
-        location : closestLocation,
-        distance : closestDistance,
-      })
-    }
-  }
-
-  const handleOpenLink = (lat:number, long:number) =>{
-     const linkGo = `https://www.google.com/maps?q=${lat},${long}`
-    Linking.openURL(linkGo);
-  }
-
   const handleGetLocation =async ()=>{
       await  GetLocation.getCurrentPosition({
         enableHighAccuracy: false,
@@ -58,15 +39,41 @@ const LocationScreen = () =>{
       })
    }
 
+   const handleGetDistanceLocation = async () =>{
+     try {
+      const response = await axios.get(`${BaseUrl.baseProd}/member/pop-news/range/${myLocation.latitude}/${myLocation.longitude}`, configWithOpenGuest);
+      console.log("check url ", `${BaseUrl.baseProd}/member/pop-news/range/${myLocation.latitude}/${myLocation.longitude}`)
+      console.log("success", response.status);      
+      if(response.status == 200){
+        setLocationRekomendasi(response.data.clients);
+      }
+     } catch (error) {
+      console.log("get distance ",error);
+     }
+   }
 
   useEffect(()=>{
     const interval = setInterval(async () =>{
       await handleGetLocation()
-      await getLocRekomend()
-    },2000);
+      await handleGetDistanceLocation()
+    },10000);
     return ()=>clearInterval(interval);
   },[myLocation]);
 
+  useEffect(()=>{
+    handleGetDistanceLocation();
+  },[]);
+
+
+  const handleDetailData = (item:GetMemberLocation) =>{
+    dispatch({
+        type : LocationActionType.GET_DETAIL_LOCATION,
+        payload : item,
+      })
+    navigate(ScreenActionType.DETAIL_LIST_LOCATION);  
+    //   navigate(ScreenActionType.DETAIL_LOCATION_DIRECTION)
+ }
+ 
     
     return(
         <SafeAreaView style={{
@@ -83,107 +90,59 @@ const LocationScreen = () =>{
                      <MapLoader/>
               }>
                 {locationRekomendasi && 
-              <MapDetailLocation myLocation={{
-                latitude : parseFloat(locationRekomendasi?.location.latitude),
-                longitude : parseFloat(locationRekomendasi?.location.longitude),
-              }}/>}
+              <MapSecond myLocation={{
+                latitude : parseFloat(myLocation.latitude),
+                longitude : parseFloat(myLocation.longitude),
+              }} locationData={locationRekomendasi}/>}
               </Suspense>
             </View>
               <View style={{
                 marginBottom : 100,
+                backgroundColor : '#F2F9FF',
+                marginTop : 20,
+                height : "100%",
               }}>
             <View style={{
-              marginTop : 10,
               padding : 15,
               paddingBottom : 0,
               flexDirection : "row",
               justifyContent : "space-between",
               alignItems  :"center",
+            
             }}>
               <Text style={{
                 fontFamily : FontStyle.BOLD,
                 color : Colors.ResColor.black,
                 fontSize : 18,
               }}>hotspot Terdekat</Text>
-              <ButtonLink onPress={() => navigate(ScreenActionType.LIST_LOCATION)} label="Selengkapnya >" textColor={Colors.ResColor.blue} disable={false} size={14} style={undefined}/>
-            </View>
-            {locationRekomendasi !== null ?
-            <View style={{
-              padding : 15,
-            }}>
-                <Text  style={{
-                fontFamily : FontStyle.MEDIUM,
-                color : Colors.ResColor.black,
-                fontSize : 14,
-              }} >{locationRekomendasi.location.name} <Text style={{
-                color : Colors.ResColor.yellow
-              }}>({Math.floor(locationRekomendasi.distance * 1000) < 1000 ? Math.floor(locationRekomendasi.distance * 1000) + " Meter" : Math.floor(locationRekomendasi.distance * 1000) / 1000 + " Km"  })</Text></Text>
-              <Text  style={{
-                fontFamily : FontStyle.REGULER,
-                color : Colors.ResColor.gray,
-                fontSize : 14,
-              }} >{locationRekomendasi.location.address}</Text>
-              <ScrollView 
-              horizontal
-              style={{
-                marginTop : 10,
+              <ButtonLink onPress={() => !isLogin ? navigate(ScreenActionType.LOGIN_SCREEN) : navigate(ScreenActionType.LIST_LOCATION)} label="Selengkapnya >" textColor={Colors.ResColor.blue} disable={false} size={14} style={undefined}/>
+            </View >
+              {locationRekomendasi !== null ? 
+            (
+              <View style={{
+                paddingTop : 20,
               }}>
-                <View style={{
-                  marginBottom : 10,
-                }}>
-              {locationRekomendasi?.location.pictures.map((item:PictureLoc)=>{
-                return(
-                  <View
-                  key={item.id}
+              {locationData?.map((item:GetMemberLocation)=>{
+                return (
+                  <TouchableOpacity
+                  onPress={()=>{
+                    handleDetailData(item)
+                  }}
                   style={{
-                    marginRight : 10,
-                    borderRadius : 10,
-                    width : 200,
-                    height : 150,
-                    elevation : 3,
-                    backgroundColor  :Colors.ResColor.white
+                    marginBottom : 15,
+                    paddingLeft : 15,
+                    paddingRight : 15,
                   }}>
-                    <Image
-                    resizeMode="contain"
-                    source={{uri : item.url}} style={{
-                      width : "100%",
-                      height : "100%",
-                      objectFit : "fill",
-                      borderRadius : 10,
-                    }}/>
-                  </View>
+                  <CardMapNews image={`${BaseUrl.baseUrl}${item.pictures[0].url}`} title={item.name}
+                  desc={`${item.address.substring(0, 35)} ${item.address.length >= 35 ? "..." : "" } `}/>
+                  </TouchableOpacity>
                 )
               })}
+
               </View>
-              </ScrollView>
-              {locationRekomendasi !== null &&
-            <View style={{
-              flexDirection : "row",
-              justifyContent : "center",
-              marginTop : 50,
-            }}>
-            <TouchableOpacity 
-            onPress={()=>handleOpenLink(parseFloat(locationRekomendasi.location.latitude),parseFloat(locationRekomendasi.location.longitude))}
-            style={{
-                backgroundColor : Colors.ResColor.blue,
-                height : 50,
-                width : "100%",
-                flexDirection  :"row",
-                alignItems : "center",
-                justifyContent : "center",
-                borderRadius : 10,
-                elevation : 3,
-              }}>
-                <Text style={{
-                  fontFamily : FontStyle.BOLD,
-                  fontSize : 18,
-                  color : Colors.ResColor.white,
-                }}>Buka Google Maps</Text>
-              </TouchableOpacity>
-              </View>}
+            ):null  
+            }
             </View>
-            :null}
-                </View>
             </ScrollView>
         </SafeAreaView>
     )

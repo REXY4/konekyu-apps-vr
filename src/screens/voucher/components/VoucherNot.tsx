@@ -5,8 +5,10 @@ import FontStyle from "../../../types/FontTypes";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { navigate } from "../../../routers/NavRef";
 import ScreenActionType from "../../../routers/types/ScreenActionType";
+import AuthUseCase from "../../../use-case/auth.usecase";
 
 const VoucherNot = () =>{
+    const {isLogin} = AuthUseCase();
     return(
         <View> 
             <View style={{
@@ -28,7 +30,7 @@ const VoucherNot = () =>{
                     fontFamily : FontStyle.MEDIUM,
                 }}>Kamu belum punya voucher ?</Text>
                 <TouchableOpacity 
-                onPress={()=>navigate(ScreenActionType.LIST_VOUCHER)}
+                onPress={()=>navigate(isLogin ? ScreenActionType.LIST_VOUCHER : ScreenActionType.LOGIN_SCREEN)}
                 style={{
                     backgroundColor  :Colors.ResColor.blue,
                     height : 40,

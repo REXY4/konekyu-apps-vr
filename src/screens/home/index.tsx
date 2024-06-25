@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Dimensions, ImageBackground, SafeAreaView, ScrollView, StatusBar, View, StyleSheet  } from "react-native";
-import { BaseUrl, configWithJwt } from "../../../config/api";
+import { BaseUrl, configWithJwt, configWithOpenGuest } from "../../../config/api";
 import  CarrouselPrimary from "../../components/carrousels/CarrouselPrimary"
 import Colors from "../../components/colors/Colors";
 import { Suspense, lazy, useEffect, useState } from "react";
@@ -25,8 +25,7 @@ const HomeScreen = () =>{
     const {GetLocationMember, getConnection}= LocationUseCase();
     const getSlideData = async () =>{
         try{
-            const config = await configWithJwt();
-            const response = await axios.get(`${BaseUrl.baseProd}/member/dashboard/sliders`, config);
+            const response = await axios.get(`${BaseUrl.baseProd}/member/landing/sliders`, configWithOpenGuest);
             if(response.status == 200){
                 setSliderData(response.data.featured_sliders)
             }else{
@@ -37,11 +36,12 @@ const HomeScreen = () =>{
         }
     }
 
+
+
     useEffect(()=>{
         const interval = setInterval(()=>{
           getConnection()
-          console.log("clear interval")
-        },5000);
+        },10000);
     
         return ()=> clearInterval(interval);
       },[]);
@@ -63,7 +63,7 @@ const HomeScreen = () =>{
     const getArtikel = async () =>{
         try{
             const config = await configWithJwt();
-            const response = await axios.get(`${BaseUrl.baseProd}/member/dashboard/articles`, config);
+            const response = await axios.get(`${BaseUrl.baseProd}/member/articles?pop_id=28`, configWithOpenGuest);
             if(response.status == 200){
                 setArtikelData(response.data.articles)
             }else{
@@ -80,7 +80,6 @@ const HomeScreen = () =>{
         handleGetLocation()
         GetLocationMember();
     },[]);
-    // { }
 
     return (
         <SafeAreaView style={{

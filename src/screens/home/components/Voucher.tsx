@@ -3,8 +3,11 @@ import Colors from "../../../components/colors/Colors";
 import FontStyle from "../../../types/FontTypes";
 import { navigate } from "../../../routers/NavRef";
 import ScreenActionType from "../../../routers/types/ScreenActionType";
+import AuthUseCase from "../../../use-case/auth.usecase";
 
 const VoucherDash = () =>{
+    const {isLogin} = AuthUseCase();
+
     return (
         <View style={{
             backgroundColor  :Colors.ResColor.white,
@@ -49,7 +52,7 @@ const VoucherDash = () =>{
                     Belum punya voucher ?
                 </Text>
                 <TouchableOpacity 
-                onPress={()=>navigate(ScreenActionType.LIST_VOUCHER)}
+                onPress={()=>navigate(isLogin ? ScreenActionType.LIST_VOUCHER : ScreenActionType.LOGIN_SCREEN)}
                 style={{
                     backgroundColor : Colors.ResColor.blue,
                     borderRadius : 10,

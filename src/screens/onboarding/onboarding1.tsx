@@ -6,8 +6,53 @@ import Colors from '../../components/colors/Colors';
 import { useEffect } from 'react';
 import { navigate } from '../../routers/NavRef';
 import ScreenActionType from '../../routers/types/ScreenActionType';
+import { useDispatch } from 'react-redux';
+import SettingActionType from '../../state/actions-type/setting.type';
 
 const OnboardingOne = () =>{
+  const dispatch = useDispatch();
+
+  const requestLocationPermissions = async () => {
+    try {
+      let granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.NEARBY_WIFI_DEVICES,
+        {
+          title: 'Cool Photo App Camera Permission',
+          message:
+            'Cool Photo App needs access to your camera ' +
+            'so you can take awesome pictures.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+  
+      // Mencoba meminta izin dengan pengulangan jika ditolak
+      while (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+        granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.NEARBY_WIFI_DEVICES,
+          {
+            title: 'Mohon izinkan aksess wifi',
+            message:
+              'Untuk Menggunakan Koneksi Konekyu!',
+            buttonPositive: 'OK',
+          },
+        );
+      }
+  
+      // Izin telah diberikan
+      setTimeout(() => {
+        dispatch({
+          type : SettingActionType.SET_SPLASH_SCREEN,
+          payload : true
+        })
+        navigate(ScreenActionType.HOME);
+      }, 3000);
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
   const requestLocationPermission = async () => {
     try {
       let granted = await PermissionsAndroid.request(
@@ -38,14 +83,26 @@ const OnboardingOne = () =>{
   
       // Izin telah diberikan
       setTimeout(() => {
-        navigate(ScreenActionType.LOGIN_SCREEN);
+        dispatch({
+          type : SettingActionType.SET_SPLASH_SCREEN,
+          payload : true
+        })
+        navigate(ScreenActionType.HOME);
       }, 3000);
     } catch (err) {
       console.warn(err);
     }
   };
+
   
       useEffect(()=>{
+        setTimeout(() => {
+          dispatch({
+            type : SettingActionType.SET_SPLASH_SCREEN,
+            payload : true
+          })
+          navigate(ScreenActionType.HOME);
+        }, 3000);
         requestLocationPermission();
       },[]);
     
@@ -62,17 +119,13 @@ const OnboardingOne = () =>{
                 flexDirection : "row",
                 justifyContent : "center",
                 marginTop : 20,
-                backgroundColor  :Colors.ResColor.blue,
-                borderRadius : 20,
-                width : "80%",
-                alignItems :"center",
-                elevation : 3,
+                // backgroundColor  :Colors.ResColor.blue,
              }}>
                 <Text style={{
                     fontFamily : FontStyle.BOLD,
-                    color : Colors.ResColor.white,
-                    fontSize : 21,
-                }}>Better Internet Better Life</Text>
+                    color : Colors.ResColor.blue,
+                    fontSize : 12,
+                }}>#MenghubungkanNusantara</Text>
              </View>
              </View>
              <View style={{

@@ -6,6 +6,7 @@ export interface DashboardSlider {
     "url": null,
     "created_at": string,
     "updated_at": string,
+    "mainImage" : string,
     "deleted_at": null,
     "images": Array<SliderImage>
 }

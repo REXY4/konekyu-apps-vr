@@ -9,13 +9,14 @@ import ScreenActionType from "../../routers/types/ScreenActionType";
 import SettingActionType from "../actions-type/setting.type";
 
 const AuthLogin = (body:RequestLoginEntities) =>async(dispatch:Dispatch) =>{
-    dispatch({
-        type : SettingActionType.SET_LOADING,
-        payload : true,
-    })
+   
     try{
+        dispatch({
+            type : SettingActionType.SET_LOADING,
+            payload : true,
+        })
         const response = await axios.post(`${BaseUrl.baseProd}/auth/login`, body, configHeaderPrimary);
-        console.log("check response ",response.data.result)
+        console.log(response);
         if(response.status == 200){
             dispatch({
                 type : AuthActionType.LOGIN,
@@ -25,13 +26,33 @@ const AuthLogin = (body:RequestLoginEntities) =>async(dispatch:Dispatch) =>{
                 type : SettingActionType.SET_LOADING,
                 payload : false,
             })
-             navigate(ScreenActionType.HOME);
+            navigate(ScreenActionType.HOME);
         }else{
             //alert
+            dispatch({
+                type : SettingActionType.SET_ALERT,
+                isOpen : true,
+                message : "Email dan password kamu salah, silahkan check email dan password kembali!",
+                status : "error"
+            })
+            dispatch({
+                type : SettingActionType.SET_LOADING,
+                payload : false,
+            })
         }
     }catch(err){
-        console.log(err)
-//alert
+        console.log("check error ",err)
+        dispatch({
+            type : SettingActionType.SET_LOADING,
+            payload : false,
+        })
+        dispatch({
+            type : SettingActionType.SET_ALERT,
+            isOpen : true,
+            message : "Email dan password kamu salah, silahkan check email dan password kembali!",
+            status : "error"
+        })
+       
     }
 }
 

@@ -9,9 +9,10 @@ import AuthActionType from '../../../state/actions-type/auth.type';
 
 interface Props {
     modalVisible : boolean,
+    setShow : any
+    onPress : any
 }
-const ModalPrimary = ({modalVisible}:Props) => {
-  const dispatch = useDispatch();
+const ModalVoucherUse = ({modalVisible, setShow, onPress}:Props) => {
   return (
     <View style={styles.centeredView}>
       <Modal
@@ -21,24 +22,28 @@ const ModalPrimary = ({modalVisible}:Props) => {
         onRequestClose={() => {
           Alert.alert('Modal has been closed.');
           // setModalVisible(!modalVisible);
-          dispatch({
-            type : AuthActionType.MODAL_ALERT,
-            modal : false
-          })
+          setShow(false);
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Pastikan kamu sudah terhubung ke jaringan koneksi <Text style={{color : Colors.ResColor.yellow}}>Konekyu</Text>!</Text>
+            <Text style={styles.modalText}>Apakah kamu yakin akan menggunakan voucher ini !</Text>
+            <View style={{
+                flexDirection  :"row",
+                justifyContent : "space-between",
+            }}>
             <Pressable
-              style={[styles.button, styles.buttonClose]}
+              style={[styles.button,{width : "35%"}, styles.buttonOpen]}
               onPress={() => {
-                dispatch({
-                  type : AuthActionType.MODAL_ALERT,
-                  modal : false
-                })
+                setShow(false);
               }}>
-              <Text style={styles.textStyle}>Mengerti</Text>
+              <Text style={styles.textStyle}>Batalkan</Text>
             </Pressable>
+            <Pressable
+              style={[styles.button2, {width : "35%", marginLeft : 10},styles.buttonOpen2]}
+              onPress={onPress}>
+              <Text style={styles.textStyle}>Ya</Text>
+            </Pressable>
+            </View>
           </View>
         </View>
       </Modal>
@@ -69,12 +74,20 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   button: {
-    borderRadius: 20,
+    borderRadius: 10,
     padding: 10,
     elevation: 2,
   },
-  buttonOpen: {
+  button2: {
+    borderRadius: 10,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen2: {
     backgroundColor: Colors.ResColor.blue,
+  },
+  buttonOpen: {
+    backgroundColor: Colors.ResColor.yellow2,
   },
   buttonClose: {
     backgroundColor: Colors.ResColor.blue,
@@ -93,4 +106,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ModalPrimary;
+export default ModalVoucherUse;

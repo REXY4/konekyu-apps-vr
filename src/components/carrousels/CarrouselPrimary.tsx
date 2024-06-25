@@ -4,6 +4,7 @@ import Carousel from 'react-native-reanimated-carousel';
 import { DashboardSlider } from '../../entities/dashboard.entities';
 import { } from 'react-native-svg';
 import { useSharedValue } from 'react-native-reanimated';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 interface Props {
     data : Array<DashboardSlider>
@@ -34,13 +35,16 @@ function CarrouselPrimary({data}:Props) {
                             justifyContent: 'center',
                         }}
                     >
+                        <TouchableOpacity>
                         <Image 
                         resizeMode='contain'
-                        source={{uri :item.images[0].url }} style={{
+                        source={{uri :item.mainImage }} style={{
                             width : "100%",
                             height : 250,
                             objectFit : "fill",
+                            borderRadius : 20,
                         }}/>
+                         </TouchableOpacity>
                     </View>
                 }}
             />

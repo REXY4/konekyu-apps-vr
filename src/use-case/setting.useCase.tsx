@@ -8,13 +8,15 @@ const selector = (App:AppRootState) => App.setting;
 const SettingUseCase = ():SettingStore=>{
     const {
         isLoading,
-        alert
+        alert,
+        splashScreen,
     } = useSelector<
     AppRootState,
     SettingStoreState
     >(selector);
   
     return{
+      splashScreen,
       isLoading,
       alert,
     }

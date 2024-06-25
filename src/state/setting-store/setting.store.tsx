@@ -7,6 +7,7 @@ export interface AlertEntities {
 
 
 interface SettingStore {
+    splashScreen : boolean,
     isLoading : boolean,
     alert : AlertEntities
 }

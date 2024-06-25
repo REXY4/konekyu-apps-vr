@@ -12,6 +12,7 @@ import ScreenActionType from "../../routers/types/ScreenActionType";
 import MapLoader from "../../components/loading/MapLoader";import GetLocation from "react-native-get-location";
 import { useDispatch } from "react-redux";
 import LocationActionType from "../../state/actions-type/location.type";
+import { BaseUrl } from "../../../config/api";
 ;
 const {height} =  Dimensions.get("screen");
 
@@ -127,11 +128,16 @@ const DetailListLocation = () =>{
               style={{
                 marginTop : 10,
               }}>
-                <View style={{
+                <ScrollView 
+                horizontal={true}
+                style={{
+                  height : 160,
                   marginBottom : 10,
+                  flexDirection  :"row",
                 }}>
               {locationRekomendasi?.location.pictures.map((item:PictureLoc)=>{
                 return(
+                  <>
                   <View
                   key={item.id}
                   style={{
@@ -144,22 +150,35 @@ const DetailListLocation = () =>{
                   }}>
                     <Image
                     resizeMode="contain"
-                    source={{uri : item.url}} style={{
+                    source={{uri : `${BaseUrl.baseUrl}${item.url}`}} style={{
                       width : "100%",
                       height : "100%",
                       objectFit : "fill",
                       borderRadius : 10,
                     }}/>
                   </View>
+                  </>
                 )
               })}
-              </View>
               </ScrollView>
-              {locationRekomendasi !== null &&
+              </ScrollView>
+             
+            </View>
+            :null}
+                </View>
+            </ScrollView>
+            {locationRekomendasi !== null &&
             <View style={{
               flexDirection : "row",
               justifyContent : "center",
               marginTop : 50,
+              position : "absolute",
+              width : "100%",
+              backgroundColor  :"white",
+              alignItems  :"center",
+              elevation : 3,
+              padding : 15,
+              bottom : 0,
             }}>
             <TouchableOpacity 
             onPress={()=>handleOpenLink(parseFloat(locationRekomendasi.location.latitude),parseFloat(locationRekomendasi.location.longitude))}
@@ -180,10 +199,6 @@ const DetailListLocation = () =>{
                 }}>Buka Google Maps</Text>
               </TouchableOpacity>
               </View>}
-            </View>
-            :null}
-                </View>
-            </ScrollView>
         </SafeAreaView>
     )
 }

@@ -21,9 +21,7 @@ const LoadingKonekyu = () =>{
                 }).start();
             });
         };
-
         const interval = setInterval(fadeInOut, 2000); // Trigger animation every 2 seconds
-
         return () => clearInterval(interval); // Cleanup the interval on unmount
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -57,18 +55,18 @@ const LoadingKonekyu = () =>{
                     alignItems  :"center"
                 }}>
                     <Image source={require("../../../assets/icons/i.png")} style={{
-                        width : 100,
-                        height : 100,
+                        width : 70,
+                        height : 70,
                         objectFit : "fill"
                     }}/>
                     <Animated.Image source={require("../../../assets/icons/i1.png")} style={{
-                        width : 50,
+                        width : 30,
                         height : 100,
                         objectFit : "fill",
                         opacity : fadeAnim,
                     }}/>
                      <Animated.Image source={require("../../../assets/icons/i1.png")} style={{
-                        width : 50,
+                        width : 30,
                         height : 150,
                         objectFit : "fill",
                         opacity : fadeOut,

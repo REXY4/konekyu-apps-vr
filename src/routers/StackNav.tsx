@@ -24,16 +24,7 @@ const Stack = createStackNavigator();
 
 export default function MyStack() {
   const {isLogin} = AuthUseCase()
-  const {detailLocation, getConnection} = LocationUseCase();
-
-  useEffect(()=>{
-    const interval = setInterval(()=>{
-      getConnection()
-      console.log("clear interval")
-    },5000);
-
-    return ()=> clearInterval(interval);
-  },[]);
+  const {detailLocation} = LocationUseCase()
  
   return (
     <Stack.Navigator>
@@ -54,7 +45,50 @@ export default function MyStack() {
           headerShown :false,
         }}
         name={ScreenActionType.LOGIN_SCREEN}
-        component={LoginScreen} />    
+        component={LoginScreen} />  
+        <Stack.Screen 
+      options={{
+        headerShown  :false,
+      }}
+      name={ScreenActionType.HOME}
+       component={MyTabs} />
+
+<Stack.Screen 
+       options={{
+         headerShown  :true,
+         title :  "Artikel",
+         cardStyle : {
+          backgroundColor : Colors.ResColor.white,
+         },
+         headerTitleStyle: {
+          color : Colors.ResColor.white,
+         },
+         headerTintColor: Colors.ResColor.white,
+         headerStyle: {
+          backgroundColor  :Colors.ResColor.blue,
+         }
+       }}
+       name={ScreenActionType.ARTIKLE_SCREEN}
+        component={ArtikleScreen} />
+
+<Stack.Screen 
+       options={{
+         headerShown  :true,
+         title : detailLocation !== null ? detailLocation.name : "Map Lokasi",
+         cardStyle : {
+          backgroundColor : Colors.ResColor.lightBlue,
+         },
+         headerTitleStyle: {
+          color : Colors.ResColor.white,
+         },
+         headerTintColor: Colors.ResColor.white,
+         headerStyle: {
+          backgroundColor  :Colors.ResColor.blue,
+         }
+       }}
+       name={ScreenActionType.DETAIL_LIST_LOCATION}
+        component={DetailListLocation} />
+         
         </>
       )
       :
@@ -65,6 +99,7 @@ export default function MyStack() {
       }}
       name={ScreenActionType.HOME}
        component={MyTabs} />
+
        <Stack.Screen 
        options={{
          headerShown  :true,

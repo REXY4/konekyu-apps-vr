@@ -14,11 +14,14 @@ import Profiles from '../screens/profiles';
 import LocationScreen from '../screens/locations';
 import LoadingPage from '../screens/onboarding/LoadingPage';
 import SettingUseCase from '../use-case/setting.useCase';
+import AuthUseCase from '../use-case/auth.usecase';
+import LoginScreen from '../screens/auth/login';
 
 const Tab = createMaterialBottomTabNavigator();
 //"#0074E0"
 export default function MyTabs() {
 const {isLoading} = SettingUseCase();
+const {isLogin} = AuthUseCase();
 
   return (
     <>
@@ -92,7 +95,7 @@ const {isLoading} = SettingUseCase();
         )
         },
       }}
-      component={Profiles} />
+      component={isLogin ? Profiles : LoginScreen} />
     </Tab.Navigator>
     </>
   );

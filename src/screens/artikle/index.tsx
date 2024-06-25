@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Image, SafeAreaView, View, Dimensions, Text, ScrollView } from "react-native"
-import { BaseUrl, configWithJwt } from "../../../config/api";
+import { BaseUrl, configWithJwt, configWithOpenGuest } from "../../../config/api";
 import { useEffect, useState } from "react";
 import FontStyle from "../../types/FontTypes";
 import Colors from "../../components/colors/Colors";
@@ -16,6 +16,7 @@ export interface DetailArtikle {
         "content": string,
         "video_link": any,
         "published_at": string,
+        "mainImage" : string,
         "published_at_formatted": string,
         "category": {
             "id": number,
@@ -37,7 +38,7 @@ const ArtikleScreen = () =>{
     const getDetailArtikle  = async () =>{
         try {
             const config = await configWithJwt();
-            const response = await axios.get(`${BaseUrl.baseProd}/member/dashboard/articles/${detailId}`, config);
+            const response = await axios.get(`${BaseUrl.baseProd}/member/articles/${detailId}`, configWithOpenGuest);
             if(response.status == 200){
                 setArtikelData(response.data.article);
             }
@@ -45,7 +46,6 @@ const ArtikleScreen = () =>{
             console.log(error);
         }
     }
-    console.log("check detail id ",detailId)
 
     useEffect(()=>{
         getDetailArtikle();
@@ -65,7 +65,7 @@ const ArtikleScreen = () =>{
             }}>
                 <Image 
                 resizeMode="cover"
-                source={{uri : artikelData.main_image[0].url}} style={{
+                source={{uri : artikelData.mainImage}} style={{
                     width : "100%",
                     height : "100%",
                     objectFit : "fill",

@@ -1,12 +1,23 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
 export const BaseUrl = {
-    baseProd : "https://konekyu.id/api/v2"
+    baseProd : "https://ribit.bnet.id/api/v2",
+    baseUrl : "https://ribit.bnet.id",
+    hotspot : "http://hotspot.bnet.id/pop.html",
+    baseHotspot : "http://hotspot.bnet.id",
+    // baseProd : "https://ribit.bnet.id/api/v2"
 }
 
 export const configHeaderPrimary = {
     headers : {
         "Content-Type" : "application/json",
+    }
+}
+
+export const configWithOpenGuest = {
+    headers : {
+        "Content-Type" : "application/json",
+        "apiKey" : "F7senIeAsLqi9TgKX0cyDiaZzCcrO6ptcs9o0sjCk18"
     }
 }
 
