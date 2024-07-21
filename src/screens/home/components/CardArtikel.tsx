@@ -49,6 +49,7 @@ const CardArtikle = (props:ArticleDash) =>{
                     fontFamily :  FontStyle.MEDIUM
                 }}
                 >{props.published_at}</Text>
+                {props.category !== null &&
                 <TouchableOpacity  
                 onPress={handleDetail}
                 style={{
@@ -65,7 +66,7 @@ const CardArtikle = (props:ArticleDash) =>{
                          color : Colors.ResColor.blue,
                          fontFamily :  FontStyle.MEDIUM
                     }}>{props.category.name}</Text>
-                </TouchableOpacity>
+                </TouchableOpacity>}
             </View>
         </View>
     )

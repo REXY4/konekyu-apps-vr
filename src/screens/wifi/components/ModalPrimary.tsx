@@ -28,7 +28,7 @@ const ModalPrimary = ({modalVisible}:Props) => {
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Pastikan kamu sudah terhubung ke jaringan koneksi <Text style={{color : Colors.ResColor.yellow}}>Konekyu</Text>!</Text>
+            <Text style={styles.modalText}>Pastikan kamu sudah terhubung ke jaringan koneksi <Text style={{color : Colors.ResColor.yellow}}>KonekYu</Text>!</Text>
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => {

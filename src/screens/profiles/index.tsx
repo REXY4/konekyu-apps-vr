@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 import AuthActionType from "../../state/actions-type/auth.type";
 import { navigate } from "../../routers/NavRef";
 import ScreenActionType from "../../routers/types/ScreenActionType";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 const Profiles = () =>{
     const {authResult} = AuthUseCase();
@@ -359,6 +360,7 @@ const Profiles = () =>{
                     dispatch({
                         type : AuthActionType.LOGOUT
                     })
+                    GoogleSignin.revokeAccess();
                     // navigate(ScreenActionType.LOGIN_SCREEN)
                 }}
                 style={{

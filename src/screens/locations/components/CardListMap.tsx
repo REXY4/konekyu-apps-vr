@@ -3,6 +3,7 @@ import { GetLocationEntities, GetMemberLocation } from "../../../entities/locati
 import Colors from "../../../components/colors/Colors";
 import FontStyle from "../../../types/FontTypes";
 import { calculateDistance } from '../../../utils/haverSine';
+import { BaseUrl } from "../../../../config/api";
 
 const {width} =  Dimensions.get("screen");
 interface Props{ 
@@ -16,24 +17,27 @@ const CardListMap = ({props,lokasiSementara}:Props) =>{
             if(jarak > 1000){
                 return Math.floor(jarak / 1000) + " km"
             }else{
-                return jarak + " m"
+                return  Math.floor(jarak) + " m"
             }
       }
     return(
         <View style={{
             backgroundColor : Colors.ResColor.white,
-            padding : 15,
+            padding : 10,
             elevation  :3,
             flexDirection  :"row",
+            borderRadius : 10,
         }}> 
             <View style={{
-                width : 150,
-                height : 150,
+                width : 80,
+                height : 80,
                 borderRadius : 10,
+                elevation : 3,
+                backgroundColor : "white",
             }}>
             <Image
             resizeMode="contain"
-             source={{uri: props.pictures[0].url}} style={{
+             source={{uri: `${BaseUrl.baseUrl}${props.pictures[0].url}`}} style={{
                 width : "100%",
                 height : "100%",
                 objectFit : "fill",
@@ -42,21 +46,24 @@ const CardListMap = ({props,lokasiSementara}:Props) =>{
             </View>
             <View style={{
                 marginLeft : 10,
-                flexDirection  :"row",
+                // flexDirection  :"row",
                 flexWrap : "wrap",
-                width : "38%",
             }}>
                 <Text style={{
                     fontFamily : FontStyle.BOLD,
                     color : Colors.ResColor.black,
                     fontSize : 14,
+                    width : "100%",
+                    paddingLeft :10,
                 }}>{props.name} <Text style={{color : Colors.ResColor.yellow}}>({getRange()})</Text></Text>
-                <Text style={{
+                     <Text style={{
                     fontSize  :12,
+                    paddingLeft : 10,
                     color : Colors.ResColor.gray,
                     fontFamily : FontStyle.REGULER,
                 }}>{props.address}</Text>
             </View>
+
         </View>
     )
 }

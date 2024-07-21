@@ -16,6 +16,7 @@ import SettingActionType from "../../../../state/actions-type/setting.type";
 import LoadingPage from "../../../onboarding/LoadingPage";
 import SettingUseCase from "../../../../use-case/setting.useCase";
 import AlertPrimary from "../../../../components/alert/AlertPrimary";
+import dynamicLinks from "@react-native-firebase/dynamic-links"
 
 const RegisterForm = () =>{
     const {popData} = LocationUseCase();
@@ -38,19 +39,37 @@ const RegisterForm = () =>{
         })
     }
 
+
+    async function buildLink(email:string, password:string) {
+        
+        const link = await dynamicLinks().buildShortLink({
+          link: `https://ribit.bnet.id/member?page=konfirmasi&email=${email}&password=${password}`,
+          domainUriPrefix: `https://konekyu.page.link`,
+          android: {
+            packageName: 'id.wahana.inetyu', // Replace with your Android package name
+            minimumVersion: '1' // Ensure this is set to a valid version
+          },
+          // optional setup which updates Firebase analytics campaign
+          // "banner". This also needs setting up before hand
+        }, dynamicLinks.ShortLinkType.DEFAULT);
+      
+        return link;
+      }
+
     const handleRegister = async () =>{
         dispatch({
             type : SettingActionType.SET_LOADING,
             payload : true
         })
-        console.log(form)
+        
         try {
+            const getLink = await buildLink(form.email, form.password);
             const response = await axios.post(`${BaseUrl.baseProd}/member/register/store`,{
                 ...form,
                 password_confirmation : form.password,
+                url : getLink,
             }, configHeaderPrimary)
           
-            console.log(response)
             if(response.status == 200){
                 dispatch({
                     type : SettingActionType.SET_ALERT,
@@ -75,6 +94,7 @@ const RegisterForm = () =>{
                 })
             }
         } catch (error) {
+            console.log("check data error ",error);
             dispatch({
                 type : SettingActionType.SET_LOADING,
                 payload : false
@@ -143,7 +163,7 @@ const RegisterForm = () =>{
                 marginBottom :15,
             }}>
                 <InputPrimary
-                placeholder="Masukan nama lengkap"
+                placeholder="Masukkan nama lengkap"
                 onChange={(val:string)=>handleChange("name", val)}
                 passwordIcon={false} type="visible-password" label="Nama Lengkap"/>
             </View>
@@ -151,7 +171,7 @@ const RegisterForm = () =>{
                 marginBottom : 15,
             }}>
             <InputPrimary 
-            placeholder="Masukan email"
+            placeholder="Masukkan email"
             onChange={(val:string)=>handleChange("email", val)}
             passwordIcon={false} type="email-address" label="Email"/>
             </View>
@@ -159,7 +179,7 @@ const RegisterForm = () =>{
                 marginBottom :15,
             }}>
                 <InputPrimary
-                placeholder="Masukan kata sandi"
+                placeholder="Masukkan kata sandi"
                 onChange={(val:string)=>handleChange("password", val)}
                 passwordIcon type="default" label="Kata sandi"/>
             </View>
@@ -167,7 +187,7 @@ const RegisterForm = () =>{
                 marginBottom :30,
             }}>
                 <InputPrimary
-                placeholder="Masukan konfirmasi kata sandi"
+                placeholder="Masukkan konfirmasi kata sandi"
                 onChange={(val:string)=>handleChange("password", val)}
                 passwordIcon type="default" label="Konfirmasi kata sandi"/>
             </View> */}

@@ -15,6 +15,8 @@ const LocationUseCase = ():LocationSettiingStore=>{
         xenditLink,
         popData,
         voucherData,
+        connectData,
+        conVoucher
     } = useSelector<
     AppRootState,
     LocationStoreState
@@ -22,6 +24,7 @@ const LocationUseCase = ():LocationSettiingStore=>{
     const dispatch = useDispatch();
     const GetLocationMember = useCallback(()=>LocationAction.getLocationMember()(dispatch),[dispatch])
     const getConnection = useCallback(()=>LocationAction.getConnection()(dispatch),[dispatch])
+    
     return{
        locationData,
        detailLocation,
@@ -29,6 +32,9 @@ const LocationUseCase = ():LocationSettiingStore=>{
        xenditLink,
        popData,
        voucherData,
+       connectData,
+       conVoucher,
+
        
        GetLocationMember,
        getConnection,

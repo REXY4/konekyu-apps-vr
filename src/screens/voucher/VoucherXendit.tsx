@@ -54,6 +54,8 @@ const XenditVoucher = () => {
         return () => backHandler.remove();
     }, [url]);
 
+    
+
     return (
         <WebView
             source={{ uri: xenditLink }}
@@ -64,7 +66,10 @@ const XenditVoucher = () => {
             allowFileAccessFromFileURLs={true}
             allowFileAccess={true}
             cacheMode="LOAD_NO_CACHE"
-            onNavigationStateChange={(navState: any) => handleBack(navState.url)}
+            onNavigationStateChange={(navState: any) => {
+                handleBack(navState.url)
+                console.log(navState.url)
+            }}
         />
     );
 };

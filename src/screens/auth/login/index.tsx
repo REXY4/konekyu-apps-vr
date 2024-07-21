@@ -8,11 +8,28 @@ import RegisterForm from "./components/RegisterForm";
 import LoadingPage from "../../onboarding/LoadingPage";
 import SettingUseCase from "../../../use-case/setting.useCase";
 import AlertPrimary from "../../../components/alert/AlertPrimary";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { ArrowRightIcon } from "../../../components/icons/Icon";
+import { Path, Svg } from "react-native-svg";
+import { goBack, navigate } from "../../../routers/NavRef";
+import ScreenActionType from "../../../routers/types/ScreenActionType";
+import dynamicLinks  from "@react-native-firebase/dynamic-links"
+import { RequestLoginEntities } from "../../../entities/auth.entities";
+import LocationUseCase from "../../../use-case/location.usecase";
+import AuthUseCase from "../../../use-case/auth.usecase";
 
 const {width} =  Dimensions.get("window");
 
+const ArrowLeft = ({size, color}:{size:number,color : string}) =>{
+    return (
+        <Svg  width={size} height={size} viewBox="0 0 24 24">
+            <Path fill={color} fill-rule="evenodd" d="M15.488 4.43a.75.75 0 0 1 .081 1.058L9.988 12l5.581 6.512a.75.75 0 1 1-1.138.976l-6-7a.75.75 0 0 1 0-.976l6-7a.75.75 0 0 1 1.057-.081" clip-rule="evenodd"/>
+            </Svg>
+    )
+}
+
 const LoginScreen = () =>{
-    const {isLoading, alert} = SettingUseCase();
+    const {isLoading, alert, } = SettingUseCase();
     const View1 = new Animated.Value(0);
     
     const handleSlide = (t:boolean)=> {
@@ -40,7 +57,6 @@ const LoginScreen = () =>{
         }
     }
 
-      
 
     return (
         <SafeAreaView style={{
@@ -49,6 +65,7 @@ const LoginScreen = () =>{
         }}>
             
             <StatusBar backgroundColor={Colors.ResColor.blue}/>
+            
             <View style={{
                 backgroundColor : Colors.ResColor.blue,
                 padding : 15,
@@ -57,7 +74,15 @@ const LoginScreen = () =>{
                 alignItems  :"center",
                 elevation : 3,
             }}>
+                
                 <View>
+                <View style={{
+                    marginBottom : 20,
+                }}>
+                    <TouchableOpacity onPress={()=>navigate(ScreenActionType.HOME)}>
+                        <ArrowLeft size={24} color="white"/>
+                    </TouchableOpacity>
+                </View>
                     <Text style={{
                         fontFamily : FontStyle.SEMI_BOLD,
                         color : Colors.ResColor.white,
@@ -69,7 +94,7 @@ const LoginScreen = () =>{
                         color : Colors.ResColor.white,
                         fontSize : 21,
                         letterSpacing : 1,
-                    }}>Konekyu</Text>
+                    }}>KonekYu</Text>
                 </View>
                 <View >
                     <View style={{
@@ -139,10 +164,7 @@ const LoginScreen = () =>{
             </View>
             </View>
             </Animated.View>
-
             </ScrollView>
-            {isLoading &&
-            <LoadingPage/>}
         </SafeAreaView>
     )
 }

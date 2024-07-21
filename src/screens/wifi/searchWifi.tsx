@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { SafeAreaView, ScrollView, Text, TouchableOpacity, View, Animated } from "react-native"
-import WifiManager, { WifiEntry, connectToProtectedSSIDPrefix } from "react-native-wifi-reborn";
+import WifiManager, { WifiEntry, connectToProtectedWifiSSID } from "react-native-wifi-reborn";
 import Colors from "../../components/colors/Colors";
 import { LockWifiIcon, RefreshIcon, WifiIcon } from "../../components/icons/Icon";
 import FontStyle from "../../types/FontTypes";
@@ -58,7 +58,10 @@ const SearchWifiScreen = ()=>{
         if(condition){
             setModalConnection(true)   
         }else{
-            connectToProtectedSSIDPrefix(ssid,"",true).then(
+            WifiManager.connectToProtectedWifiSSID({
+                ssid : ssid,
+                password:  null,
+            }).then(
                 result=>{
                     handleWifiManager()
                 },
@@ -94,10 +97,10 @@ const SearchWifiScreen = ()=>{
                         }}>Silahkan pilih jaringan <Text style={{
                             color : Colors.ResColor.yellow,
                             fontWeight :"bold"
-                        }}> konekyu </Text> untuk menikmati fasilitas internet gratis dan paket voucher dari <Text style={{
+                        }}> KonekYu </Text> untuk menikmati fasilitas internet gratis dan paket voucher dari <Text style={{
                             color : Colors.ResColor.yellow,
                             fontWeight :"bold"
-                        }}> konekyu </Text>!</Text>
+                        }}> KonekYu </Text>!</Text>
                     </View>
                 </View>
                 <ScrollView>
@@ -105,7 +108,7 @@ const SearchWifiScreen = ()=>{
                         padding : 15,
                     }}>
                         {wifiList[0] !== undefined && 
-                        wifiList.map((item:WifiEntry)=>{
+                        wifiList.filter(fil=>fil.SSID == "#KonekYu_gratis").map((item:WifiEntry)=>{
                             return(
                                 <View style={{
                                     marginBottom : 20,
@@ -125,7 +128,7 @@ const SearchWifiScreen = ()=>{
                                     fontSize : 18,
                                     fontFamily : Colors.ResColor.black,
                                     paddingLeft : 10,
-                                }}>{item.SSID} </Text>
+                                }}>{item.BSSID} </Text>
                                 {item.capabilities !== "[ESS]" && item.SSID !== wifiSSID &&
                                 <LockWifiIcon size={21} color={Colors.ResColor.yellow}/>
                                 }

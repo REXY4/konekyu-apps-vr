@@ -5,11 +5,11 @@ import FontStyle from "../../../types/FontTypes"
 import LocationUseCase from "../../../use-case/location.usecase"
 
 const Connect = ()=>{
-    const {popData} = LocationUseCase();
+    const {popData, connectData} = LocationUseCase();
     const dataExp = [
         {
             id : 0,
-            desc : "Sambungkan dengan jaringan konekyu"
+            desc : "Sambungkan dengan jaringan KonekYu"
         },
         {
             id : 1,
@@ -36,7 +36,7 @@ const Connect = ()=>{
                     marginLeft : 10,
                     position : "relative",
                     top : 3,
-                }}>{!popData.connect ? "Disconnect" : "Connected"}</Text>
+                }}>{!connectData ? "Belum Terhubung" : "Terhubung"}</Text>
             </View>
             <View style={{
                 marginTop : 10,
@@ -45,24 +45,43 @@ const Connect = ()=>{
                 borderRadius  :10,
                 padding : 15,
             }}>
-                <Text style={{
-                    fontSize : 12,
-                    color : Colors.ResColor.white,
-                    fontFamily : FontStyle.REGULER,
-                }}>Ikuti intruksi sebelum terkoneksi :</Text>
-                <View style={{
-                    paddingLeft : 10,
-                }}>
-                {dataExp.map((item:any,index:number)=>{
-                    return <Text
-                    style={{
+                 {!connectData ?
+                        <>
+                    <Text style={{
+                        color : Colors.ResColor.white,
                         fontFamily : FontStyle.REGULER,
                         fontSize : 12,
+                        width : "80%",
+                    }}>
+                        Ikuti instruksi untuk terhubung jaringan KonekYu:
+                    </Text>
+                    <Text style={{
                         color : Colors.ResColor.white,
-                    }}
-                    >{index +1}.{item.desc}</Text>
-                })}
-                </View>
+                        fontFamily : FontStyle.REGULER,
+                        fontSize : 12,
+                        paddingLeft : 5,
+
+                    }}>
+                        1. Klik cari jaringan KonekYu 
+                    </Text>
+                    <Text style={{
+                        color : Colors.ResColor.white,
+                        fontFamily : FontStyle.REGULER,
+                        fontSize : 12,
+                        paddingLeft : 5,
+                    }}>
+                        2 .Hubungkan dengan jaringan KonekYu
+                    </Text>
+                    </> :  <Text style={{
+                        color : Colors.ResColor.white,
+                        fontFamily : FontStyle.REGULER,
+                        fontSize : 12,
+                        width : "80%",
+                    }}>
+                        Selamat kamu sudah terhubung ke jaringan KonekYu!
+                    </Text>
+                        }
+                        
             </View>
         </View>
     )

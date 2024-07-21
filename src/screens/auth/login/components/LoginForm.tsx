@@ -14,6 +14,8 @@ import { useDispatch } from "react-redux";
 import AuthActionType from "../../../../state/actions-type/auth.type";
 import LocationUseCase from "../../../../use-case/location.usecase";
 import SettingActionType from "../../../../state/actions-type/setting.type";
+import { navigate } from "../../../../routers/NavRef";
+import ScreenActionType from "../../../../routers/types/ScreenActionType";
 
 const LoginForm = () =>{
     const {AuthLogin} = AuthUseCase();
@@ -24,7 +26,7 @@ const LoginForm = () =>{
         username:   "",
         password:   "",
         token_name: "userhostpot",
-        pop_id:     243,
+        pop_id:     popData.popId,
     });
     const handleChange = (name:string, val:string) =>{
         setForm({
@@ -50,7 +52,7 @@ const LoginForm = () =>{
              if (hasPlayService) {
                  GoogleSignin.signIn().then(async (userInfo) => {
                      const getToken = await GoogleSignin.getTokens();
-                     console.log("check token ", getToken.accessToken)
+                   
                      console.log(`${"https://konekyu.id"}/auth/login/google/callback?token=${getToken.accessToken}`);
                      const response = await axios.post(`${BaseUrl.baseProd}/auth/login/google/callback?token=${getToken.accessToken}`,{}, configHeaderPrimary);
                      console.log("check sussccess ", response.data);
@@ -67,7 +69,7 @@ const LoginForm = () =>{
                          type: SettingActionType.SET_ALERT,
                          message: e.response.data.message,
                          status: 'error',
-                         condition: true,
+                         isOpen: true,
                      });
                  });
              }
@@ -78,7 +80,7 @@ const LoginForm = () =>{
                  type: SettingActionType.SET_ALERT,
                  message: e.response.data.message,
                  status: 'error',
-                 condition: true,
+                 isOpen: true,
              });
          });
     };
@@ -97,7 +99,7 @@ const LoginForm = () =>{
                 marginBottom : 15,
             }}>
             <InputPrimary 
-                    placeholder="Masukan email"
+                    placeholder="Masukkan email"
                     onChange={(val: string) => handleChange("username", val)}
                     passwordIcon={false} type="email-address" label="Email" value={form.username}/>
             </View>
@@ -106,7 +108,7 @@ const LoginForm = () =>{
             }}>
                 <InputPrimary
                 value={form.password}
-                placeholder="Masukan kata sandi"
+                placeholder="Masukkan kata sandi"
                 onChange={(val:string)=>handleChange("password", val)}
                 passwordIcon type="default" label="Kata sandi"/>
             </View>
@@ -117,7 +119,7 @@ const LoginForm = () =>{
                 size={14}
                 textColor={undefined}
                 label="Lupa password?" 
-                onPress={()=>console.log("ahll")} disable={false} style={undefined} />
+                onPress={()=>navigate(ScreenActionType.RESET_PASSWORD)} disable={false} style={undefined} />
             </View>
             <View >
                 <ButtonContainer 

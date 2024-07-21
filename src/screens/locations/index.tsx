@@ -16,6 +16,7 @@ import axios from "axios";
 import { BaseUrl, configWithOpenGuest } from "../../../config/api";
 import CardMapNews from "./components/CardMapNew";
 import AuthUseCase from "../../use-case/auth.usecase";
+import CardLoader from "../../components/loading/cardLoader";
 const {height} =  Dimensions.get("screen");
 
 
@@ -42,8 +43,7 @@ const LocationScreen = () =>{
    const handleGetDistanceLocation = async () =>{
      try {
       const response = await axios.get(`${BaseUrl.baseProd}/member/pop-news/range/${myLocation.latitude}/${myLocation.longitude}`, configWithOpenGuest);
-      console.log("check url ", `${BaseUrl.baseProd}/member/pop-news/range/${myLocation.latitude}/${myLocation.longitude}`)
-      console.log("success", response.status);      
+    
       if(response.status == 200){
         setLocationRekomendasi(response.data.clients);
       }
@@ -89,11 +89,13 @@ const LocationScreen = () =>{
               <Suspense fallback={
                      <MapLoader/>
               }>
-                {locationRekomendasi && 
+                {locationRekomendasi !== null ? 
               <MapSecond myLocation={{
                 latitude : parseFloat(myLocation.latitude),
                 longitude : parseFloat(myLocation.longitude),
-              }} locationData={locationRekomendasi}/>}
+              }} locationData={locationRekomendasi}/>
+              : <MapLoader/>
+              }
               </Suspense>
             </View>
               <View style={{
@@ -122,7 +124,7 @@ const LocationScreen = () =>{
               <View style={{
                 paddingTop : 20,
               }}>
-              {locationData?.map((item:GetMemberLocation)=>{
+              {locationRekomendasi?.map((item:GetMemberLocation)=>{
                 return (
                   <TouchableOpacity
                   onPress={()=>{
@@ -140,7 +142,28 @@ const LocationScreen = () =>{
               })}
 
               </View>
-            ):null  
+            ): (
+            <View style={{
+              padding : 15,
+              marginTop : 10,
+              height : "100%",
+            }}>
+              <View style={{
+                marginBottom : 15,
+              }}>
+                <CardLoader/>
+              </View>
+              <View style={{
+                marginBottom : 15,
+              }}>
+                <CardLoader/>
+              </View>
+              <View style={{
+                marginBottom : 15,
+              }}>
+                <CardLoader/>
+              </View>
+            </View> )
             }
             </View>
             </ScrollView>

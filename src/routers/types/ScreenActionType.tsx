@@ -17,6 +17,8 @@ enum ScreenActionType {
     SEARCH_WIFI = "SEARCH_WIFI",
     CHANGE_PASSWORD = "CHANGE_PASSWORD",
     EDIT_PROFILE = "EDIT_PROFILE",
+    RESET_PASSWORD = "RESET_PASSWORD",
+    GANTI_PASSWORD = "GANTI_PASSWORD",
 }
 
 export default ScreenActionType;

@@ -47,7 +47,7 @@ const OnboardingOne = () =>{
           payload : true
         })
         navigate(ScreenActionType.HOME);
-      }, 3000);
+      }, 5000);
     } catch (err) {
       console.warn(err);
     }
@@ -88,7 +88,7 @@ const OnboardingOne = () =>{
           payload : true
         })
         navigate(ScreenActionType.HOME);
-      }, 3000);
+      }, 10000);
     } catch (err) {
       console.warn(err);
     }
@@ -102,7 +102,7 @@ const OnboardingOne = () =>{
             payload : true
           })
           navigate(ScreenActionType.HOME);
-        }, 3000);
+        }, 10000);
         requestLocationPermission();
       },[]);
     

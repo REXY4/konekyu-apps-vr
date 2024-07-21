@@ -19,18 +19,22 @@ import SettingUseCase from '../use-case/setting.useCase';
 import LoadingPage from '../screens/onboarding/LoadingPage';
 import ChangePassword from '../screens/profiles/changePassword';
 import EditProfile from '../screens/profiles/editProfile';
+import ResetPassword from '../screens/auth/login/resetPassword';
+import GantiPassword from '../screens/auth/login/GantiPassword';
 
 const Stack = createStackNavigator();
 
 export default function MyStack() {
   const {isLogin} = AuthUseCase()
   const {detailLocation} = LocationUseCase()
+  const {splashScreen} = SettingUseCase();
  
   return (
     <Stack.Navigator>
       {!isLogin ?
       (
         <>
+        {!splashScreen &&
          <Stack.Screen 
           options={{
           headerShown :false,
@@ -39,13 +43,26 @@ export default function MyStack() {
           }
         }}
         name={ScreenActionType.ONBOARDING1}
-        component={OnboardingOne} />    
+        component={OnboardingOne} /> }    
+        
         <Stack.Screen 
           options={{
           headerShown :false,
         }}
         name={ScreenActionType.LOGIN_SCREEN}
         component={LoginScreen} />  
+         <Stack.Screen 
+          options={{
+          headerShown :false,
+        }}
+        name={ScreenActionType.RESET_PASSWORD}
+        component={ResetPassword} />  
+         <Stack.Screen 
+          options={{
+          headerShown :false,
+        }}
+        name={ScreenActionType.GANTI_PASSWORD}
+        component={GantiPassword} />  
         <Stack.Screen 
       options={{
         headerShown  :false,
@@ -103,9 +120,9 @@ export default function MyStack() {
        <Stack.Screen 
        options={{
          headerShown  :true,
-         title : "List Lokasi",
+         title : "Lokasi Hotspot",
          cardStyle : {
-          backgroundColor : Colors.ResColor.lightBlue,
+          backgroundColor : Colors.ResColor.white,
          },
          headerTitleStyle: {
           color : Colors.ResColor.white,
@@ -156,7 +173,7 @@ export default function MyStack() {
         <Stack.Screen 
        options={{
          headerShown  :true,
-         title :  "Cari Hostpot Terdekat",
+         title :  "Peta Lokasi Hotspot",
          cardStyle : {
           backgroundColor : Colors.ResColor.lightBlue,
          },

@@ -82,7 +82,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         multiDexEnabled true
-        versionCode 71
+        versionCode 80
         versionName "2.0"
     }
     signingConfigs {
@@ -117,7 +117,7 @@ dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
    
     implementation("com.facebook.react:react-android")
-    implementation platform('com.google.firebase:firebase-bom:33.0.0')
+   implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
     implementation 'com.google.android.gms:play-services-ads:22.2.0'
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.android.support:multidex:1.0.3'

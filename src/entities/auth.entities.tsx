@@ -2,7 +2,7 @@ export interface RequestLoginEntities {
     username:   string;
     password:   string;
     token_name: string;
-    pop_id:     number;
+    pop_id:     number | null;
 }
 
 export interface ResultLogin {

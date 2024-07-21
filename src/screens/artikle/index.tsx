@@ -38,6 +38,7 @@ const ArtikleScreen = () =>{
     const getDetailArtikle  = async () =>{
         try {
             const config = await configWithJwt();
+            console.log("check detail id ",detailId)
             const response = await axios.get(`${BaseUrl.baseProd}/member/articles/${detailId}`, configWithOpenGuest);
             if(response.status == 200){
                 setArtikelData(response.data.article);
@@ -49,6 +50,9 @@ const ArtikleScreen = () =>{
 
     useEffect(()=>{
         getDetailArtikle();
+        return()=>{
+            getDetailArtikle()
+        }
     },[]);
 
 

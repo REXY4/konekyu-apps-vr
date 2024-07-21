@@ -11,6 +11,7 @@ import ScreenActionType from "../../routers/types/ScreenActionType";
 import { Path, Svg } from "react-native-svg";
 import Colors from "../../components/colors/Colors";
 import FontStyle from "../../types/FontTypes";
+import InputPrimary from "../../components/inputs/InputPrimary";
 
 const OpenMapIcon = ({size, color}:{size:number, color:string}) =>{
     return (
@@ -23,6 +24,7 @@ const OpenMapIcon = ({size, color}:{size:number, color:string}) =>{
 const ListLocationScreen = ()=>{
     const {locationData} = LocationUseCase();
     const [myLocation, setMyLocation] = useState<any|null>(null)
+    const [searchVal, setSearchVal] = useState<string>("");
     const dispatch = useDispatch();
 
     const handleGetLocation =async ()=>{
@@ -48,52 +50,68 @@ const ListLocationScreen = ()=>{
         //   navigate(ScreenActionType.DETAIL_LOCATION_DIRECTION)
      }
      
-     console.log(myLocation)
   
     useEffect(()=>{
-      const interval = setInterval(async () =>{
-        await handleGetLocation()
-      },2000);
-      return ()=>clearInterval(interval);
+         handleGetLocation()
     },[myLocation]);
   
     return (
         <SafeAreaView>
             <View style={{
-                position : "absolute",
                 right : 0,
-                width  :"50%",
-                zIndex : 50,
                 elevation : 3,
-          
+                backgroundColor  :Colors.ResColor.blue,
+                padding : 15,          
             }}>
                 <TouchableOpacity 
                 onPress={()=>navigate(ScreenActionType.OPEN_MAP_LOCATION)}
                 style={{
-                    backgroundColor :Colors.ResColor.yellow,
+                    backgroundColor :"#0365BE",
                     flexDirection  :"row",
                     padding : 10,
                     alignItems :"center",
                     borderBottomLeftRadius : 10,
+                    borderRadius : 5,
+                    justifyContent : "space-between",
                 }}>
+                    <View style={{
+                        flexDirection  :"row",
+                    }}>
                     <OpenMapIcon size={24} color={Colors.ResColor.white}/>
                     <Text style={{
                         fontSize : 18,
                         color : Colors.ResColor.white,
                         fontFamily : FontStyle.MEDIUM,
                         paddingLeft : 10,
-                    }}>Buka Map {">"}</Text>
+                    }}>Buka Peta </Text>
+                    </View>
+                    <Text style={{
+                         fontSize : 21,
+                         color : Colors.ResColor.white,
+                         fontFamily : FontStyle.MEDIUM,
+                         position : "relative",
+                         top : 3,
+                    }}>{">"}</Text>
                 </TouchableOpacity>
+                <View style={{
+                    marginTop :20,
+                }}>
+                    <InputPrimary searchIcon={true} label={undefined}
+                    textContentType="none"
+                     type={"visible-password"} passwordIcon={false} onChange={(val:string)=>setSearchVal(val)} placeholder={"Cari Lokasi"} value={searchVal} paste={false} onPresPaste={undefined} />
+                </View>
             </View>
             <ScrollView>
                 <View style={{
-                    paddingTop : 50,
+                    padding : 15,
                     backgroundColor  :Colors.ResColor.white,
                 }}>
-                    {locationData && myLocation && locationData.map((item:GetMemberLocation)=>{
+                    {locationData && myLocation && locationData.filter((fil:GetMemberLocation)=>fil.name.toLowerCase().includes(searchVal.toLowerCase()) 
+                    ||fil.address.toLowerCase().includes(searchVal.toLowerCase()) ).map((item:GetMemberLocation)=>{
                         return (
-                            <TouchableOpacity onPress={()=>handleDetailData(item)} style={{
-                                marginBottom : 2,
+                            <TouchableOpacity 
+                            onPress={()=>handleDetailData(item)} style={{
+                                marginBottom : 10,
                             }}>
                                 <CardListMap props={item} lokasiSementara={myLocation}/>
                             </TouchableOpacity>

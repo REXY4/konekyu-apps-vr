@@ -9,21 +9,54 @@ import FontStyle from "../../../types/FontTypes";
 import Colors from "../../../components/colors/Colors";
 import AuthUseCase from "../../../use-case/auth.usecase";
 import { VoucherSerialEnt } from "./VoucherKu";
+import Countdown from "../../../components/timeCoundown";
+import { FormatTime } from "../../wifi";
+import VoucherNotActive from "./VoucherNotActive";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { useDispatch } from "react-redux";
+import SettingActionType from "../../../state/actions-type/setting.type";
+import LocationActionType from "../../../state/actions-type/location.type";
 const {height} = Dimensions.get("screen")
 
 
-interface VoucherInfoEntities {
-            "id": number,
-            "client_id": number,
-            "code": string,
-            "time_left": number,
-            "connect_method": string,
-            "time_left_humans": string,
-            "time_left_clock": string,
-            "client": {
-                "id": number,
-                "name": string
-            }
+interface VoucherDetail {
+    id: number;
+    client_id: number;
+    voucher_id: number;
+    code: string;
+    status: string;
+    sold_at: string;
+    sell_price: number;
+    time_left: number;
+    used_by: number;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+    active_user: number;
+    activation_date: string | null;
+    expired_date: string | null;
+    use_date: string;
+}
+
+interface VoucherInfo {
+    id: number;
+    name: string;
+    start_date: string;
+    end_date: string;
+    lifetime: string;
+    download: string;
+    download_unit: string;
+    upload: string;
+    upload_unit: string;
+    limit_user: number;
+    price: number;
+    one_day: number;
+    type: string;
+    is_gift: number;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+    voucher_detail: VoucherDetail;
 }
 
 
@@ -47,19 +80,39 @@ interface ClientDetails {
     };
 }
 
-const VoucherAktif = () =>{
-    const {popData, voucherData,} = LocationUseCase();
+
+
+export interface TimeLeftEntity {
+    id: number;
+    member_id: number;
+    client_id: number;
+    voucher_id: number;
+    connect_method: string;
+    voucher_serial: string;
+    profile: string;
+    time_left: number;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+    ip_address: string | null;
+    type: string | null;
+    uniq_id: string | null;
+  }
+  
+
+const VoucherAktif = ({setTab, tabButton}:{setTab:any,tabButton:boolean}) =>{
+    const {authResult} = AuthUseCase();
+    const {popData, voucherData, connectData} = LocationUseCase();
     const {voucherVal} =  AuthUseCase();
     const [clientData, setClientData] = useState<ClientDetails | null>(null)
     const [refresh, setRefresh] =  useState<boolean>(false)
-    const [voucherInfo, setVoucherInfo] = useState<VoucherInfoEntities | null>(null)
+    const [voucherInfo, setVoucherInfo] = useState<VoucherInfo | null>(null)
     const [voucherSerial,setVoucherSerial] = useState<VoucherSerialEnt | null>(null);
-
-    
+    const [timeLeft, setTimeLeft] = useState<TimeLeftEntity| null>(null)
+    const dispatch =  useDispatch();
     const getPopId = async () =>{
         try {
             const response = await axios.get(`${BaseUrl.baseProd}/member/pop-news/detail/${popData.popId}`, configWithOpenGuest);
-            console.log(response.data.client)
                 if(response.status == 200){
                     setClientData(response.data.client);
                 }
@@ -70,51 +123,99 @@ const VoucherAktif = () =>{
     const getVoucherAktive = async () =>{
         try {
             const config =  await configWithJwt();
-            const response = await axios.get(`${BaseUrl.baseProd}/member/voucher/serial/active?pop_id=${popData.popId}`, config);
+            const response = await axios.get(`${BaseUrl.baseProd}/member/voucher/serial/active?pop_id=${popData.popId}&member_id=${authResult?.id}`, config);
             if(response.status == 200){
-                setVoucherInfo(response.data.voucher_info);
+                setVoucherInfo(response.data.data.voucher);
+                setTimeLeft(response.data.time_left);
                 setRefresh(false);
             }else{
                 setRefresh(false);
             }
         } catch (error) {
+            console.log("check error ", error)
             setRefresh(false);
-            console.log("error", error)
         }
     }
 
-    const getVoucher = async() =>{
+
+    const logoutConnect = async () =>{
         try {
-            const config = await configWithJwt();
-            console.log(config.headers.Authorization);
-            const response = await axios.get(`${BaseUrl.baseProd}/member/voucher/serial?pop_id=30`, config);
-            if(response.status == 200){
-                setVoucherSerial(response.data.voucher_serials.data.filter((fil:VoucherSerialEnt)=>fil.voucher_id == parseInt(voucherVal))[0]);
-                setRefresh(false)
+            dispatch({
+                type : SettingActionType.SET_LOADING,
+            payload : true,
+            })
+    
+            
+            const linloginTrial = `${BaseUrl.baseProd}/member/connect-internet-open/logout`;
+            const loginTrial = await axios.post(linloginTrial,{
+                "mac" : voucherInfo?.voucher_detail.code,
+                "pop_id" : popData.popId
+            },configWithOpenGuest);
+            
+            if(loginTrial.status == 200){
+                const checkStatus = await axios.get(`${BaseUrl.baseHotspot}/logout.html`);
+                dispatch({
+                    type : LocationActionType.CON,
+                    payload : false,
+                });
+                dispatch({
+                    type : LocationActionType.CON_VOUCHER,
+                    val : "",
+                    condition : false,
+                    time : 0,
+                    currentTime : 0,
+                   })
+                dispatch({
+                    type : SettingActionType.SET_ALERT,
+                    isOpen : true,
+                    status : "success",
+                    message : "Koneksi telah di matikan!"
+                }) 
+                dispatch({
+                    type : SettingActionType.SET_LOADING,
+                payload : false,
+                }) 
             }
+       
         } catch (error) {
-            console.log("get voucher ku ", error)
-            setRefresh(false)
-        }
+            dispatch({
+                type : LocationActionType.CON_VOUCHER,
+                val : "",
+                condition : false,
+                time : 0,
+                currentTime : 0,
+               })
+            const checkStatus = await axios.get(`${BaseUrl.baseHotspot}/logout.html`);
+            dispatch({
+                type : LocationActionType.CON,
+                payload : false,
+            });
+            dispatch({
+                type : SettingActionType.SET_ALERT,
+                isOpen : true,
+                status : "success",
+                message : "Koneksi telah di matikan!"
+            }) 
+        }    
     }
 
-
-
-
-
-
+   
     const onRefresh = () =>{
         setRefresh(true);
         getVoucherAktive();
-        getVoucher();
         getPopId();
     }
+
     useEffect(()=>{
         getVoucherAktive()
         getVoucherAktive();
-        getVoucher();
         getPopId();
-    },[]);
+        return () => {
+            getVoucherAktive()
+            getVoucherAktive();
+            getPopId();
+        };
+    },[tabButton]);
 
     return(
         <View onTouchStart={()=>onRefresh()}>
@@ -127,11 +228,12 @@ const VoucherAktif = () =>{
                         onRefresh={onRefresh}
                     />
                 }>
-        {voucherInfo !== null && 
+        {voucherInfo !== null && connectData && timeLeft?.type == "paid" &&
         <View style={{
-            marginTop : height / 5,
+            marginTop : height / 7,
             height : "100%",
             paddingRight : 30,
+            paddingBottom : 20,
         }}>
             <View style={{
                 backgroundColor  :Colors.ResColor.white,
@@ -151,13 +253,28 @@ const VoucherAktif = () =>{
                 }}>Informasi Voucher</Text>
 
            </View>
-           {clientData !== null && 
+           {voucherInfo !== null && 
+           (
+            <>
            <View style={{
-            marginTop : 20,
+            flexDirection  :"row",
+            alignItems : "center",
+            justifyContent : "center",
+            paddingTop : 20,
+           }}>
+                <Text style={{
+                    fontSize : 18,
+                    fontFamily:  FontStyle.BOLD,
+                    color : Colors.ResColor.yellow,
+                }}>{voucherInfo.voucher_detail.code}</Text>
+           </View>
+           <View style={{
+            // marginTop : 20,
             padding :20,
             flexDirection :"row",
             justifyContent : "space-between",
            }}>
+            <View>
                         <View style={{
                             width : 100,
                             height : 100,
@@ -182,7 +299,7 @@ const VoucherAktif = () =>{
                         <View style={{
                             width : 15,
                             height : 15,
-                            backgroundColor : "#37D13A",
+                            backgroundColor : timeLeft?.time_left < 0 ? Colors.ResColor.red: "#37D13A",
                             borderRadius :100,
                             marginTop : 10,
                             elevation : 5,
@@ -190,10 +307,20 @@ const VoucherAktif = () =>{
                         <Text style={{
                             paddingTop : 10,
                             paddingLeft : 10,
-                        }}>Aktif</Text>
+                        }}>{timeLeft?.time_left < 0 ? "Waktu Habis" : "Aktif"}</Text>
                         </View>
                         
                 </View>
+                        <View style={{
+                            marginTop : 15,
+                            flexDirection : "row",
+                            justifyContent : "center",
+                        }}>
+                            <Countdown idVoucher={timeLeft.id} code={voucherInfo.voucher_detail.code} lifetimeInSeconds={timeLeft?.time_left < 0 ? 0 : timeLeft?.time_left}/>
+                        </View>
+
+                </View>
+                
 
                   <View>
                         <View style={{
@@ -232,7 +359,7 @@ const VoucherAktif = () =>{
                                         height : 24,
                                         marginRight : 10,
                                     }}/>
-                                        <Text>{voucherSerial?.voucher.upload} {voucherSerial?.voucher.upload_unit}</Text>
+                                        <Text>{voucherInfo.upload} {voucherInfo.upload_unit}</Text>
                                 </View>
                             </View>
                             <View style={{
@@ -252,7 +379,7 @@ const VoucherAktif = () =>{
                                         height : 24,
                                         marginRight : 10,
                                     }}/>
-                                <Text>{voucherSerial?.voucher.download} {voucherSerial?.voucher.download_unit}</Text>
+                                <Text>{voucherInfo.download} {voucherInfo.download_unit}</Text>
                                 </View>
                             </View>
                            
@@ -261,22 +388,49 @@ const VoucherAktif = () =>{
                             marginTop : 10,
                         }}>
                                 <Text>Exp</Text>
-                                <Text>{voucherSerial?.voucher.end_date_formatted}</Text>
+                                <Text>{voucherInfo.end_date}</Text>
                         </View>
-
+                        <View>
+                    
                   </View>
+                  </View>
+                
            </View>
+           <View style={{
+            padding : 15,
+           }}>
+           <TouchableOpacity 
+           onPress={logoutConnect}
+           style={{
+            backgroundColor  :Colors.ResColor.blue,
+            borderRadius : 10,
+            height: 50,
+            elevation : 3,
+            flexDirection : "row",
+            justifyContent :"center",
+            alignItems  :"center",
+           }}>
+                        <Text style={{
+                            textAlign : "center",
+                            fontSize : 18,
+                            fontFamily : FontStyle.REGULER,
+                            color : "white",
+                        }}>Matikan Koneksi</Text>
+        </TouchableOpacity>
+        </View>
+           </>
+           )
         }
          
            </View>
         </View>
         
         }
-        {voucherInfo == null &&
+        {timeLeft?.type !== "paid" && 
         <View style={{
             marginTop : height / 5,
         }}> 
-           <VoucherNot/> 
+           <VoucherNotActive setTab={setTab}/> 
         </View>}
         </ScrollView>
         </View>

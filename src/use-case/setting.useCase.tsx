@@ -10,6 +10,7 @@ const SettingUseCase = ():SettingStore=>{
         isLoading,
         alert,
         splashScreen,
+        conVoucher
     } = useSelector<
     AppRootState,
     SettingStoreState
@@ -19,6 +20,7 @@ const SettingUseCase = ():SettingStore=>{
       splashScreen,
       isLoading,
       alert,
+      conVoucher
     }
 }
 

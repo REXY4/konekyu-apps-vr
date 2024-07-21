@@ -15,10 +15,17 @@ const INITIAL_STATE: LocationStoreState = {
     detailId : 0,
     xenditLink : "",
     voucherData : "",
+    connectData : false,
+    conVoucher : {
+        val : "",
+        condition : false,
+        time : 0,
+        currentTime : 0,
+    },
     popData : {
         connect : false,
-        popId : "318"
-    }
+        popId : "",
+    },
 };
 
 const LocationReducers = (state: LocationStoreState | any = INITIAL_STATE, action: AnyAction) => {
@@ -48,9 +55,23 @@ const LocationReducers = (state: LocationStoreState | any = INITIAL_STATE, actio
                 ...state,
                 popData : {
                     connect : action.connect,
-                    popId : action.popId
+                    popId : action.popId,
+                }
+            } 
+        case LocationActionType.CON_VOUCHER:
+            return {
+                ...state,
+                conVoucher : {
+                    val : action.val,
+                    condition : action.condition,
+                    currentTime : action.currentTime
                 }
             }    
+        case LocationActionType.CON:
+            return {
+                ...state,
+                connectData : action.payload
+            }       
         case LocationActionType.VAL_VOUCHER:
             return{
                 ...state,

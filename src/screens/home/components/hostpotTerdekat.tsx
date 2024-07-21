@@ -21,7 +21,7 @@ const HostpotTerdekat = ()=>{
                 fontSize : 14,
                 fontFamily : FontStyle.BOLD,
                 color : Colors.ResColor.black
-            }}>Hostpot Terdekat</Text>
+            }}>Hotspot Terdekat</Text>
             <ButtonLink size={14}
             onPress={()=>navigate(ScreenActionType.LOCATION)}
             label="Selengkapnya>"/>
@@ -33,9 +33,9 @@ const HostpotTerdekat = ()=>{
                     bottom : 10,
                     fontFamily : FontStyle.REGULER,
                     color : Colors.ResColor.black
-                }}>Cari dan temukan hostpot <Text style={{
+                }}>Cari dan temukan hotspot <Text style={{
                     color : Colors.ResColor.blue
-                }}>konekyu</Text> di dekatmu</Text>
+                }}>KonekYu</Text> di dekatmu</Text>
         </View>
     )
 }

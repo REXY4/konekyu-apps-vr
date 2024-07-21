@@ -25,6 +25,7 @@ export interface GetMemberLocation {
     id:        number;
     parent_id: number;
     name:      string;
+    ssid : string;
     address:   string;
     latitude:  string;
     longitude: string;

@@ -4,6 +4,7 @@ import FontStyle from "../../types/FontTypes";
 import { useEffect, useState } from "react";
 import VoucherKu from "./components/VoucherKu";
 import VoucherAktif from "./components/VoucherAktif";
+import { useNavigation } from "@react-navigation/native";
 
 const {width} =  Dimensions.get("window");
 
@@ -39,6 +40,8 @@ const VoucherScreen = () =>{
     useEffect(()=>{
         handleSlide();
     },[tabButton])
+
+
 
     return (
         <SafeAreaView style={{
@@ -105,18 +108,17 @@ const VoucherScreen = () =>{
                         {
                             translateX: View1
                         },
-                       
                     ]
                      }}>
                         <View style={{
                             width : width,
                         }}>
-                            <VoucherKu/>
+                            <VoucherKu setTab={setTabButton} tabButton={tabButton}/>
                         </View>
                         <View style={{
                             width : width,
                         }}>
-                            <VoucherAktif/>
+                            <VoucherAktif tabButton={tabButton} setTab={setTabButton} />
                         </View>
                 </Animated.View>
             </View>

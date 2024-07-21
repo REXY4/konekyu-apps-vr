@@ -5,6 +5,8 @@ enum LocationActionType {
     BUY_VOUCHER = "BUY_VOUCHER",
     SET_POP = "SET_POP",
     VAL_VOUCHER = "VAL_VOUCHER",
+    CON = "CON",
+    CON_VOUCHER = "CON_VOUCHER",
 }
 
 

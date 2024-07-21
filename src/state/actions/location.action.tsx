@@ -2,9 +2,7 @@ import axios from "axios";
 import { Dispatch } from "redux";
 import { BaseUrl, configHeaderPrimary, configWithJwt, configWithOpenGuest } from "../../../config/api";
 import LocationActionType from "../actions-type/location.type";
-import SettingActionType from "../actions-type/setting.type";
-import LocationUseCase from "../../use-case/location.usecase";
-import { store } from "../stores";
+
 
 const getLocationMember = () => async (dispatch:Dispatch)=>{
     try{
@@ -23,25 +21,32 @@ const getLocationMember = () => async (dispatch:Dispatch)=>{
 
 
 const getConnection = () => async (dispatch:Dispatch)=>{
-        
+  
         try {
-            const config = await configWithJwt();
-            const response = await axios.get(`${BaseUrl.baseHotspot}/pop.html`, config);
+            const response = await axios.get(`${BaseUrl.baseHotspot}/pop.html`, configHeaderPrimary);
             if(response.status == 200){
+          
+
+                // dispatch({
+                //     type : LocationActionType.CON,
+                //     payload : false,
+                // });
                 dispatch({
                     type : LocationActionType.SET_POP,
-                    popId : response.data ? response.data.toString().trim() : '318',
+                    popId : response.data ? response.data.toString().trim() : '2',
                     connect : true
                 })
             }else{
                 dispatch({
                     type : LocationActionType.SET_POP,
-                    popId : response.data ? response.data.toString().trim() : '318',
+                    popId : response.data ? response.data.toString().trim() : '2',
                     connect : false
                 })
             }
         } catch (error) {
-                const getDefault = axios.get(`${BaseUrl.baseProd}/member/pop-news/default`, configWithOpenGuest)
+            const response = await axios.get(`${BaseUrl.baseHotspot}/pop.html`, configHeaderPrimary);
+            console.log("check data response id ", response);
+            const getDefault = axios.get(`${BaseUrl.baseProd}/member/pop-news/default`, configWithOpenGuest)
             .then((result:any)=>{
                 if(result.status == 200){
                     console.log(result.data.client)
@@ -51,7 +56,6 @@ const getConnection = () => async (dispatch:Dispatch)=>{
                         connect : false
                     })
                 }else{
-
                     // dispatch({
                     //     type : SettingActionType.SET_ALERT,
                     //     isOpen : true,

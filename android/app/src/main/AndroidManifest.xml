@@ -8,7 +8,9 @@
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+<uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.VIBRATE" />
 
     <application
       android:name=".MainApplication"
@@ -34,8 +36,17 @@
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-        
+        </intent-filter>       
+         <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <!-- Ganti dengan skema dan host yang sesuai -->
+        <data
+            android:scheme="https"
+            android:host="konekyu.page.link"
+            android:pathPrefix="/H3Ed" />
+    </intent-filter>
       </activity>
     </application>
 </manifest>

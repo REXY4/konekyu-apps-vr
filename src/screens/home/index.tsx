@@ -13,6 +13,7 @@ import LocationUseCase from "../../use-case/location.usecase";
 import MapLoader from "../../components/loading/MapLoader";
 import GetLocation from "react-native-get-location";
 import LoadingPage from "../onboarding/LoadingPage";
+import socket from "../../helpers/socket";
 const height = Dimensions.get("window").height;
 
 const MapLocation = lazy(()=>import("../locations/components/MapLocation"))
@@ -36,16 +37,7 @@ const HomeScreen = () =>{
         }
     }
 
-
-
-    useEffect(()=>{
-        const interval = setInterval(()=>{
-          getConnection()
-        },10000);
-    
-        return ()=> clearInterval(interval);
-      },[]);
-
+  
     const handleGetLocation =async ()=>{
         await  GetLocation.getCurrentPosition({
           enableHighAccuracy: false,
@@ -63,7 +55,8 @@ const HomeScreen = () =>{
     const getArtikel = async () =>{
         try{
             const config = await configWithJwt();
-            const response = await axios.get(`${BaseUrl.baseProd}/member/articles?pop_id=28`, configWithOpenGuest);
+            const getArticleId = await axios.get(`${BaseUrl.baseProd}/member/pop-news/default`, configWithOpenGuest);
+            const response = await axios.get(`${BaseUrl.baseProd}/member/articles?pop_id=${getArticleId.data.client.id}`, configWithOpenGuest);
             if(response.status == 200){
                 setArtikelData(response.data.articles)
             }else{
@@ -79,6 +72,12 @@ const HomeScreen = () =>{
         getArtikel();
         handleGetLocation()
         GetLocationMember();
+        return()=>{
+            getSlideData();
+            getArtikel();
+            handleGetLocation()
+            GetLocationMember();
+        }
     },[]);
 
     return (

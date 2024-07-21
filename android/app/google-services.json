@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "670486900808-2p4uuv2gsj9qjhcnvmsh4og074091a30.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.wahana.inetyu",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "670486900808-43687nt4qh86magph1nbe04le8lg06se.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.wahana.inetyu",
+            "certificate_hash": "4f3001c5d1863b9e5e9e2cc3eb5983361cd50206"
+          }
+        },
+        {
           "client_id": "670486900808-4cebv5oq7b6slsmjp0h3baj0293r7tpg.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

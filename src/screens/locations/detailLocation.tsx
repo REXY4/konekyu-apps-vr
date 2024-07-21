@@ -23,10 +23,9 @@ const DetailLocation = () =>{
   
   
     useEffect(()=>{
-      const interval = setInterval(async () =>{
-        await handleGetLocation()
-      },2000);
-      return ()=>clearInterval(interval);
+      // const interval = setInterval(async () =>{
+        handleGetLocation()
+      // },2000);
     },[myLocation]);
   
     return(

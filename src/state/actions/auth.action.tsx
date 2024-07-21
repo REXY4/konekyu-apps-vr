@@ -9,14 +9,12 @@ import ScreenActionType from "../../routers/types/ScreenActionType";
 import SettingActionType from "../actions-type/setting.type";
 
 const AuthLogin = (body:RequestLoginEntities) =>async(dispatch:Dispatch) =>{
-   
     try{
         dispatch({
             type : SettingActionType.SET_LOADING,
             payload : true,
         })
-        const response = await axios.post(`${BaseUrl.baseProd}/auth/login`, body, configHeaderPrimary);
-        console.log(response);
+        const response = await axios.post(`${BaseUrl.baseProd}/auth/login`, {...body, type:"konfirmasi"}, configHeaderPrimary);
         if(response.status == 200){
             dispatch({
                 type : AuthActionType.LOGIN,
@@ -41,7 +39,7 @@ const AuthLogin = (body:RequestLoginEntities) =>async(dispatch:Dispatch) =>{
             })
         }
     }catch(err){
-        console.log("check error ",err)
+        console.log("error login ",err);
         dispatch({
             type : SettingActionType.SET_LOADING,
             payload : false,

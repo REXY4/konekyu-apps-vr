@@ -17,6 +17,8 @@ import LocationActionType from "../../../state/actions-type/location.type";
 import ModalVoucherUse from "./ModalVoucherUse";
 import AlertPrimary from "../../../components/alert/AlertPrimary";
 import SettingUseCase from "../../../use-case/setting.useCase";
+import { FormatTime } from "../../wifi";
+import {getIpAddressSync, getAndroidIdSync} from "react-native-device-info"
 const {height} = Dimensions.get("screen")
 
 export interface VoucherSerialEnt {
@@ -38,7 +40,7 @@ export interface VoucherSerialEnt {
                 "voucher": VoucherDetailEnt
 }
 
-const VoucherKu = () =>{
+const VoucherKu = ({tabButton, setTab}:{tabButton:any, setTab:any}) =>{
     const {popData} = LocationUseCase();
     const {modal} = AuthUseCase()
     const {alert} = SettingUseCase();
@@ -55,9 +57,10 @@ const VoucherKu = () =>{
     const getVoucher = async() =>{
         try {
             const config = await configWithJwt();
-            const response = await axios.get(`${BaseUrl.baseProd}/member/voucher/serial?pop_id=${popData.popId}`, config);
+            const response = await axios.get(`${BaseUrl.baseProd}/member/voucher/serial?perPage=999&pop_id=${popData.popId}`, config);
             if(response.status == 200){
                 setVoucherSerial(response.data.voucher_serials.data);
+                console.log(response.data.voucher_serials.data);
                 setRefresh(false)
             }
         } catch (error) {
@@ -68,7 +71,10 @@ const VoucherKu = () =>{
 
     useEffect(()=>{
         getVoucher();
-    },[]);
+        return () => {
+        getVoucher();
+        };
+    },[tabButton]);
 
     const handleConnectVoucher = async () =>{
         dispatch({
@@ -83,8 +89,12 @@ const VoucherKu = () =>{
         try {
             const config = await configWithJwt();
             const response = await axios.post(`${BaseUrl.baseProd}/member/connect-internet?pop_id=${popData.popId}`,{
-                'voucher_code' : voucherVal
+                'voucher_code' : voucherVal,
+                'type' : "paid",
+                'ip_address' : getIpAddressSync(),
+                'uniq_id' : getAndroidIdSync(),
             } ,config);
+            console.log("check response ",response);
             if(response.status == 200){
                 const connect = await axios.get(response.data.redirect);
                 if(connect.status == 200){
@@ -103,6 +113,7 @@ const VoucherKu = () =>{
                         status : "success",
                         message : "Koneksi Terhubung!"
                     })
+                    setTab(true)
                 }else{
                     dispatch({
                         type : SettingActionType.SET_LOADING,
@@ -140,6 +151,8 @@ const VoucherKu = () =>{
                 })
             }
         } catch (error:any) {
+            console.log("check response ", error);
+
             dispatch({
                 type : AuthActionType.VOUCHER_VAL,
                 payload : ''
@@ -240,6 +253,7 @@ const VoucherKu = () =>{
                                         <Text style={{
                                         fontFamily : FontStyle.BOLD,
                                         fontSize : 14,
+                                        width : 150,
                                         color : item.id == idVoucher ? Colors.ResColor.white : Colors.ResColor.blue,
                                         textAlign :"start",
                                     }}>{item.voucher.name}</Text>
@@ -249,6 +263,9 @@ const VoucherKu = () =>{
                                                 paddingLeft : 5,
                                                 paddingRight : 5,
                                                 right : 0, 
+                                                height : 30,
+                                                flexDirection : "row",
+                                                alignItems : "center",
                                                 elevation : 3,
                                             }}>
                                             <Text style={{
@@ -256,10 +273,11 @@ const VoucherKu = () =>{
                                                 fontSize : 14,
                                                 color : Colors.ResColor.white,
                                                 textAlign :"center",
-                                            }}>{item.time_left} Jam</Text>
+                                            }}>{
+                                                FormatTime(item.time_left)
+                                            } Jam</Text>
                                             </View>
                                         </View>
-                                   
                                     <Text style={{
                                         fontFamily : FontStyle.BOLD,
                                         fontSize : 12,
@@ -272,7 +290,7 @@ const VoucherKu = () =>{
                                         fontFamily : FontStyle.BOLD,
                                         fontSize : 12,
                                         width : 400,
-                                        marginTop : 30,
+                                        marginTop : 10,
                                         position : "relative",
                                         right : 15,
                                         color : item.id == idVoucher ? Colors.ResColor.white : Colors.ResColor.gray,
@@ -285,6 +303,7 @@ const VoucherKu = () =>{
                     </View>
                     <ModalPrimary modalVisible={modal} />
                 </ScrollView>
+
                                <View style={{
                                         flexDirection  :"row",
                                         justifyContent : "center",
@@ -328,11 +347,18 @@ const VoucherKu = () =>{
                 </>
             )
             :
+            <ScrollView refreshControl={
+                <RefreshControl
+                    refreshing={refresh}
+                    onRefresh={onRefresh}
+                />
+            }>
         <View style={{
             marginTop : height / 5,
         }}> 
            <VoucherNot/>
-        </View>}
+        </View>
+        </ScrollView>}
         <ModalVoucherUse onPress={handleConnectVoucher} setShow={setShowModal} modalVisible={showModal}/>
         {alert.isOpen &&
              <AlertPrimary status={alert.status} message={alert.message}/> }  

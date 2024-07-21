@@ -117,7 +117,7 @@ const DetailListLocation = () =>{
                 fontSize : 14,
               }} >Jarak  : <Text style={{
                 color : Colors.ResColor.yellow
-              }}>({Math.floor(locationRekomendasi.distance * 1000) < 1000 ? Math.floor(locationRekomendasi.distance * 1000) + " Meter" : Math.floor(locationRekomendasi.distance * 1000) / 1000 + " Km"  })</Text></Text>
+              }}>({Math.floor(locationRekomendasi.distance) * 1000 < 1000 ? Math.floor(locationRekomendasi.distance * 1000) + " Meter" : Math.floor(locationRekomendasi.distance * 1000 / 1000)  + " Km"  })</Text></Text>
               <Text  style={{
                 fontFamily : FontStyle.REGULER,
                 color : Colors.ResColor.gray,

@@ -10,6 +10,7 @@ interface SettingStore {
     splashScreen : boolean,
     isLoading : boolean,
     alert : AlertEntities
+    conVoucher : boolean
 }
 
 export type {SettingStore}

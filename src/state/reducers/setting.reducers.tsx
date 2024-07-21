@@ -17,6 +17,7 @@ const INITIAL_STATE: SettingStoreState = {
         isOpen: false,
         message : ""
     },
+    conVoucher : false,
 };
 
 const SettingReducers = (state: SettingStoreState | any = INITIAL_STATE, action: AnyAction) => {

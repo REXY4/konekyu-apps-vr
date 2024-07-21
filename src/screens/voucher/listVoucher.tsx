@@ -1,9 +1,8 @@
 import axios from "axios";
-import { ImageBackground, SafeAreaView, ScrollView, Text, View, TouchableOpacity,Image } from "react-native"
+import { ImageBackground, SafeAreaView, ScrollView, Text, View, TouchableOpacity,Image, RefreshControl } from "react-native"
 import { BaseUrl, configWithJwt } from "../../../config/api";
 import { useEffect, useState } from "react";
 import { VoucherEntities } from "../../entities/voucher.entities";
-import {  } from "react-native-gesture-handler";
 import Colors from "../../components/colors/Colors";
 import FontStyle from "../../types/FontTypes";
 import ModalVoucher from "./components/ModalVoucher";
@@ -23,6 +22,7 @@ import SettingUseCase from "../../use-case/setting.useCase";
 
 const ListVoucher = () =>{
     const [showModal, setModal] = useState<boolean>(false);
+    const [refresh, setRefresh] = useState<boolean>(false);
     const [voucherData, setVoucherData] = useState<Array<VoucherEntities> | null>(null)
     const [voucherDataDetail, setVoucherDataDetail] = useState<VoucherEntities>()
     const {popData}  = LocationUseCase()
@@ -34,10 +34,13 @@ const ListVoucher = () =>{
     const getVoucher = async () =>{
         try{  
             const config = await configWithJwt();
-            console.log(config);
             const response = await axios.get(`${BaseUrl.baseProd}/member/voucher?pop_id=${popData.popId}`, config);
+            console.log("check voucher data ",response.data)
             if(response.status == 200){
-                setVoucherData(response.data.voucher_clients.data)
+                   setRefresh(false);
+                if(response.data.voucher_clients.data.length > 0){
+                    setVoucherData(response.data.voucher_clients.data)
+                }
             }
         }catch(err:any){
             console.log("err get voucher : ", err);
@@ -47,6 +50,9 @@ const ListVoucher = () =>{
 
     useEffect(()=>{
         getVoucher();
+        return ()=>{
+            getVoucher()
+        }
     },[]);
 
 
@@ -68,11 +74,13 @@ const ListVoucher = () =>{
                 "pop_id" : popData.popId,
                  "email" : authResult?.email
             },config);
+            setRefresh(false)
             if(response.status == 200){
                 dispatch({
                     type : SettingActionType.SET_LOADING,
                     payload : false
                 })
+                console.log(response.data.payment_url)
                 dispatch({
                      type : LocationActionType.BUY_VOUCHER,
                      payload : response.data.payment_url
@@ -80,15 +88,27 @@ const ListVoucher = () =>{
                 navigate(ScreenActionType.BUY_VOUCHER)
             }
         } catch (error) {
-            console.log("buy voucher : ", error);
+            setRefresh(false)
         }
+    }
+
+    const onRefresh = async () =>{
+        setRefresh(true);
+        await getVoucher();
     }
 
     return (
         <SafeAreaView style={{
             height : "100%",
         }}>
-           <ScrollView> 
+           <ScrollView 
+           refreshControl={
+            <RefreshControl
+                refreshing={refresh}
+                onRefresh={onRefresh}
+            />
+                }
+           > 
             {voucherData &&
             <View style={{
                 paddingTop : 10,
@@ -205,9 +225,8 @@ const ListVoucher = () =>{
                 })}
             </View>
             }
-            
-            </ScrollView>
-            {!voucherData && 
+
+        {!voucherData && 
             <View style={{
                 marginTop : 100,
                 padding : 15,
@@ -227,6 +246,9 @@ const ListVoucher = () =>{
                 }}>Saat ini belum ada voucher yang tersedia. Silakan cek kembali nanti.</Text>
             </View>
             }
+            
+            </ScrollView>
+            
             <ModalVoucher onPress={handleBuyVoucher} name={String(voucherDataDetail?.voucher.name)} setModal={setModal} modalVisible={showModal}/>
             {isLoading && <LoadingPage/>}
         </SafeAreaView>

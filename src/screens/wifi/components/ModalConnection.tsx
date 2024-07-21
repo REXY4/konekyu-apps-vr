@@ -65,7 +65,7 @@ const handleSubmit = () =>{
                 <InputPrimary label={""} type={"default"}
                  passwordIcon={true} 
                 onChange={(val:string)=>setPassword(val)}
-                placeholder={'Masukan Password'}/>
+                placeholder={'Masukkan Password'}/>
             </View>
             <View style={{
                         width : width /1.5,
