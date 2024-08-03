@@ -16,6 +16,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { useDispatch } from "react-redux";
 import SettingActionType from "../../../state/actions-type/setting.type";
 import LocationActionType from "../../../state/actions-type/location.type";
+import socket from "../../../helpers/socket";
 const {height} = Dimensions.get("screen")
 
 
@@ -123,6 +124,7 @@ const VoucherAktif = ({setTab, tabButton}:{setTab:any,tabButton:boolean}) =>{
     const getVoucherAktive = async () =>{
         try {
             const config =  await configWithJwt();
+            console.log(config.headers.Authorization.replace("Bearer",""))
             const response = await axios.get(`${BaseUrl.baseProd}/member/voucher/serial/active?pop_id=${popData.popId}&member_id=${authResult?.id}`, config);
             if(response.status == 200){
                 setVoucherInfo(response.data.data.voucher);
@@ -141,11 +143,9 @@ const VoucherAktif = ({setTab, tabButton}:{setTab:any,tabButton:boolean}) =>{
     const logoutConnect = async () =>{
         try {
             dispatch({
-                type : SettingActionType.SET_LOADING,
+            type : SettingActionType.SET_LOADING,
             payload : true,
             })
-    
-            
             const linloginTrial = `${BaseUrl.baseProd}/member/connect-internet-open/logout`;
             const loginTrial = await axios.post(linloginTrial,{
                 "mac" : voucherInfo?.voucher_detail.code,
@@ -206,6 +206,8 @@ const VoucherAktif = ({setTab, tabButton}:{setTab:any,tabButton:boolean}) =>{
         getPopId();
     }
 
+
+
     useEffect(()=>{
         getVoucherAktive()
         getVoucherAktive();
@@ -217,6 +219,15 @@ const VoucherAktif = ({setTab, tabButton}:{setTab:any,tabButton:boolean}) =>{
         };
     },[tabButton]);
 
+
+    useEffect(()=>{
+        socket.on("getpop", async(val:string)=>{
+            getVoucherAktive()
+            getVoucherAktive();
+            getPopId();
+        })
+    },[socket]);
+    
     return(
         <View onTouchStart={()=>onRefresh()}>
         <ScrollView 
@@ -421,12 +432,10 @@ const VoucherAktif = ({setTab, tabButton}:{setTab:any,tabButton:boolean}) =>{
            </>
            )
         }
-         
            </View>
         </View>
-        
         }
-        {timeLeft?.type !== "paid" && 
+        {timeLeft?.type !== "paid" && !connectData &&  
         <View style={{
             marginTop : height / 5,
         }}> 

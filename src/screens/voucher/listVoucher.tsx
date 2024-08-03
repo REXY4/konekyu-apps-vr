@@ -16,6 +16,8 @@ import SettingActionType from "../../state/actions-type/setting.type";
 import LoadingKonekyu from "../onboarding/LoadingKonekyu";
 import LoadingPage from "../onboarding/LoadingPage";
 import SettingUseCase from "../../use-case/setting.useCase";
+import { AppState } from 'react-native';
+import socket from "../../helpers/socket";
 
 
 
@@ -49,11 +51,24 @@ const ListVoucher = () =>{
 
 
     useEffect(()=>{
+        const handleAppStateChange = (nextAppState:string) => {
+            if (nextAppState === 'active') {
+                getVoucher();
+            }
+        };
         getVoucher();
+        const subscription = AppState.addEventListener('change', handleAppStateChange);
         return ()=>{
-            getVoucher()
+            subscription.remove();
         }
     },[]);
+
+
+    useEffect(()=>{
+        socket.on("getpop", async(val:string)=>{
+            getVoucher();
+        })
+    },[socket])
 
 
     const handleOpenModal = (item:VoucherEntities) =>{
@@ -72,7 +87,7 @@ const ListVoucher = () =>{
             const response = await axios.post(`${BaseUrl.baseProd}/member/voucher`, {
                 "voucher": parseInt(String(voucherDataDetail?.id)),
                 "pop_id" : popData.popId,
-                 "email" : authResult?.email
+                "email" : authResult?.email
             },config);
             setRefresh(false)
             if(response.status == 200){
@@ -121,7 +136,7 @@ const ListVoucher = () =>{
                         style={{
                             width : "100%",
                             // padding : 20,
-                            height : 100,
+                            height : 120,
                             marginBottom : 10,
                             borderRadius : 10,
                             elevation : 3,
@@ -184,6 +199,7 @@ const ListVoucher = () =>{
                                     color : Colors.ResColor.white,
                                     fontSize : 14,
                                 }}>{item.voucher.name}</Text>
+                           
                                         <View style={{
                                         backgroundColor  :Colors.ResColor.yellow2,
                                         // position : "absolute",
@@ -198,7 +214,13 @@ const ListVoucher = () =>{
                                             color : Colors.ResColor.white,
                                         }}>Rp {item.voucher.price.toLocaleString()}</Text>
                                     </View>
+                                    
                                 </View>
+                                <Text style={{
+                                    fontFamily :FontStyle.BOLD,
+                                    color : Colors.ResColor.yellow2,
+                                    fontSize : 11,
+                                }}>Total : {item.voucher.total} Voucher </Text>
                                 <View style={{
                                     flexDirection  :"row",
                                 }}>

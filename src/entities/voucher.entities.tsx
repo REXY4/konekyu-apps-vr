@@ -20,6 +20,7 @@ export interface VoucherEntities {
             "end_date_formatted": string,
             "lifetime_humans": string,
             "lifetime_clock": string
+            "total" : number
         },
         "client": {
             "id": number,

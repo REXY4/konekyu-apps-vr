@@ -10,7 +10,7 @@ import FontStyle from "../../types/FontTypes";
 import LoadingKonekyu from "../onboarding/LoadingKonekyu";
 import LoadingKonekyu2 from "../onboarding/loadingKonekyu2";
 import { WifiIcon } from "../../components/icons/Icon";
-import { navigate } from "../../routers/NavRef";
+import { navigate, navigationRef } from "../../routers/NavRef";
 import ScreenActionType from "../../routers/types/ScreenActionType";
 import ModalConnection from "./components/ModalConnection";
 import AdsenseBanner from "../../components/adsense/adsenseBanner";
@@ -236,7 +236,6 @@ const handleGetDistanceLocation = async () =>{
     }
 
     const OpenAdsense = async () =>{
-        Appodeal.show(AppodealAdType.INTERSTITIAL);
         try{
             if(popData.connect && !connectData){
                 setLoadingButton(true);
@@ -251,34 +250,12 @@ const handleGetDistanceLocation = async () =>{
                    })
                 let status = 0;
                 if(!loadingButton){
-                let response2:any ;   
-                const linloginTrial = `${BaseUrl.baseProd}/member/connect-internet-open/trial`;
-                const loginTrial = await axios.post(linloginTrial,{
-                    "mac" : mac,
-                    "pop_id" : popData.popId
-                },configWithOpenGuest);
-                     status = (await axios.get(loginTrial.data.redirect)).status;
-                }else{
-                    status = 200;
-                }
-                if(status == 200){
-                        const checkStatus = await axios.get(`${BaseUrl.baseHotspot}/status.html`);
-                        const checkInitial = Appodeal.isInitialized(AppodealAdType.INTERSTITIAL);
-                        if(checkInitial){       
                             const loadedAds = Appodeal.isLoaded(AppodealAdType.INTERSTITIAL)
                             const loadedVideos = Appodeal.isLoaded(AppodealAdType.REWARDED_VIDEO)
                             const canShowInters = Appodeal.canShow(AppodealAdType.INTERSTITIAL);
                             const canShowVideo = Appodeal.canShow(AppodealAdType.REWARDED_VIDEO);
                             if(loadedAds || loadedVideos){
-                                setLoadingButton(false)
-                                const logoutUrl = `${BaseUrl.baseProd}/member/connect-internet-open/logout`;
-                                if(canShowInters){
-                                    setStatusModal(false);
-                                     await axios.post(logoutUrl,{
-                                        "mac" : mac,
-                                        "pop_id" : popData.popId
-                                    },configWithOpenGuest);
-                                    
+                                setLoadingButton(false)                                    
                                     Appodeal.show(AppodealAdType.INTERSTITIAL);
                                     appodeal.addEventListener(AppodealInterstitialEvent.CLOSED, () =>handleInterstitialClosed());
                                     appodeal.addEventListener(AppodealInterstitialEvent.CLICKED, () =>
@@ -325,19 +302,8 @@ const handleGetDistanceLocation = async () =>{
                                         handleInterstitialClosed()
                                     );
                                 }
-                            }
-                        }
                 }
-            //     appodeal.addEventListener(AppodealInterstitialEvent.EXPIRED, () =>
-            //         handleFail()
-            //     );
-               
-            //     appodeal.addEventListener(AppodealInterstitialEvent.FAILED_TO_LOAD, () =>
-            //         handleFail()
-            // );
-            // appodeal.addEventListener(AppodealInterstitialEvent.FAILED_TO_SHOW, () =>
-            //     handleFail()
-            //     );
+         
              }else{
                 if(!connectData){
                     dispatch({
@@ -392,7 +358,6 @@ const handleGetDistanceLocation = async () =>{
             const text = await Clipboard.getString();
             setVoucherVal(text);
     }
-
     
 
     const handleConnect = async () =>{ 
@@ -402,9 +367,13 @@ const handleGetDistanceLocation = async () =>{
             payload : true
         })
         try {
+            const getIps = getIpAddressSync();
+            const parts = getIps.split('.');
+            parts.pop();
+            const newIp = parts.join(".");
             const logoutUrl = `${BaseUrl.baseProd}/member/connect-internet-open/logout`;
             setLoadingButton(false)
-
+           
             await axios.post(logoutUrl,{
                 "mac" : mac,
                 "pop_id" : popData.popId
@@ -416,7 +385,10 @@ const handleGetDistanceLocation = async () =>{
             },configWithOpenGuest);
             
             const response = await axios.post(`${BaseUrl.baseProd}/member/connect-internet-open?pop_id=${popData.popId}`,{
-                'voucher_code' : null
+                'voucher_code' : null,
+                'ip_address' : getIpAddressSync(),
+                'uniq_id' : getAndroidIdSync(),
+                "network" : newIp,
             } ,configWithOpenGuest);
 
             if(response.status == 200){
@@ -571,12 +543,17 @@ const handleGetDistanceLocation = async () =>{
                     payload : false,
                 });
             }
+            const getIp = getIpAddressSync();
+            const parts = getIp.split('.');
+            parts.pop();
+            const newIp = parts.join(".");
             const configData = isLogin ? await configWithJwt() : configWithOpenGuest;
             const response = await axios.post(`${BaseUrl.baseProd}/member/${isLogin ? "connect-internet" :  "connect-internet-open"}?pop_id=${popData.popId}`,{
                 'voucher_code' : voucherVal,
                 'type' : "free",
                 'ip_address' : getIpAddressSync(),
                 'uniq_id' : getAndroidIdSync(),
+                "network" : newIp,
             } ,configData);
             if(response.status == 200){
                 await getVoucherAktive();
@@ -699,6 +676,21 @@ const handleGetDistanceLocation = async () =>{
 
 
       useEffect(()=>{
+        socket.on("getpop", async(val:string)=>{
+            WifiManager.getCurrentWifiSSID().then(
+                ssid => {
+                setWIFISSID(ssid);
+                },
+                () => {
+                setWIFISSID("")
+              }
+            )
+        })
+      
+      },[socket])
+
+
+      useEffect(()=>{
         WifiManager.getCurrentWifiSSID().then(
             ssid => {
             setWIFISSID(ssid);
@@ -709,7 +701,7 @@ const handleGetDistanceLocation = async () =>{
          
           }
         );
-      },[myLocation])
+      },[alert.isOpen])
 
 
       
@@ -840,8 +832,9 @@ const handleGetDistanceLocation = async () =>{
                     <TouchableOpacity
                     onPress={async () => {
                         // WifiManager.setEnabled(true);
-                        // navigate(ScreenActionType.SEARCH_WIFI);
-                        ConnectWifi();
+                         navigate(ScreenActionType.SEARCH_WIFI);
+                        // navigate
+                        // ConnectWifi();
                     }}
                     style={{
                         backgroundColor  : Colors.ResColor.yellow,

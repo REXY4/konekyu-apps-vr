@@ -57,7 +57,19 @@ export default function MyStack() {
         }}
         name={ScreenActionType.RESET_PASSWORD}
         component={ResetPassword} />  
+         <Stack.Screen 
+          options={{
+          headerShown :false,
+        }}
+        name={ScreenActionType.GANTI_PASSWORD}
+        component={GantiPassword} />  
         <Stack.Screen 
+      options={{
+        headerShown  :false,
+      }}
+      name={ScreenActionType.HOME}
+       component={MyTabs} />
+       <Stack.Screen 
        options={{
          headerShown  :true,
          title :  "List Koneksi",
@@ -72,20 +84,8 @@ export default function MyStack() {
           backgroundColor  :Colors.ResColor.blue,
          }
        }}
-       name={ScreenActionType.SEARCH_WIFI}
+       name={ScreenActionType.Masukkan}
         component={SearchWifiScreen} />
-         <Stack.Screen 
-          options={{
-          headerShown :false,
-        }}
-        name={ScreenActionType.GANTI_PASSWORD}
-        component={GantiPassword} />  
-        <Stack.Screen 
-      options={{
-        headerShown  :false,
-      }}
-      name={ScreenActionType.HOME}
-       component={MyTabs} />
 
 <Stack.Screen 
        options={{
@@ -255,7 +255,7 @@ export default function MyStack() {
           backgroundColor  :Colors.ResColor.blue,
          }
        }}
-       name={ScreenActionType.SEARCH_WIFI}
+       name={ScreenActionType.Masukkan}
         component={SearchWifiScreen} />
 
 <Stack.Screen 

@@ -5,6 +5,10 @@ import Colors from "../../components/colors/Colors";
 import { LockWifiIcon, RefreshIcon, WifiIcon } from "../../components/icons/Icon";
 import FontStyle from "../../types/FontTypes";
 import ModalConnection from "./components/ModalConnection";
+import { navigate } from "../../routers/NavRef";
+import ScreenActionType from "../../routers/types/ScreenActionType";
+import SettingActionType from "../../state/actions-type/setting.type";
+import { useDispatch } from "react-redux";
 
 
 const SearchWifiScreen = ()=>{
@@ -13,7 +17,7 @@ const SearchWifiScreen = ()=>{
     const rotateValue = useRef(new Animated.Value(0)).current;
     const [modalConnection, setModalConnection] = useState<boolean>(false);
     const [ssidForm, setSsidForm] = useState<string>("");
-
+    const dispatch = useDispatch();
 
     const startRotateAnimation = () => {
         rotateValue.setValue(0); // Reset the value
@@ -64,9 +68,22 @@ const SearchWifiScreen = ()=>{
             }).then(
                 result=>{
                     handleWifiManager()
+                    navigate(ScreenActionType.WIFI);
+                    dispatch({
+                        type : SettingActionType.SET_ALERT,
+                        isOpen : true,
+                        status : "success",
+                        message : "Jaringan KonekYu Valid!"
+                    }) 
                 },
                 ()=>{
-                    console.log("fail to connect ")
+                    console.log("fail to connect ") 
+                    dispatch({
+                        type : SettingActionType.SET_ALERT,
+                        isOpen : true,
+                        status : "error",
+                        message : "Jaringan KonekYu tidak Valid!"
+                    }) 
                 }
             );   
         }
@@ -128,7 +145,7 @@ const SearchWifiScreen = ()=>{
                                     fontSize : 18,
                                     fontFamily : Colors.ResColor.black,
                                     paddingLeft : 10,
-                                }}>{item.BSSID} </Text>
+                                }}>{item.SSID} </Text>
                                 {item.capabilities !== "[ESS]" && item.SSID !== wifiSSID &&
                                 <LockWifiIcon size={21} color={Colors.ResColor.yellow}/>
                                 }
@@ -138,7 +155,9 @@ const SearchWifiScreen = ()=>{
                                 }}>
                                     {item.SSID == wifiSSID ? 
                                 (
-                                    <View style={{
+                                    <TouchableOpacity
+                                    // onPress={()=>WifiManager.disconnectFromSSID}
+                                    style={{
                                         backgroundColor  :Colors.ResColor.blue,
                                         padding : 10,
                                         borderRadius : 10,
@@ -149,7 +168,7 @@ const SearchWifiScreen = ()=>{
                                             fontFamily : FontStyle.BOLD,
                                             fontSize : 14,
                                         }}>Terhubung</Text>
-                                    </View>
+                                    </TouchableOpacity>
                                 ):(
                                     <TouchableOpacity 
                                     onPress={()=>handleModalConnection(item.SSID, item.capabilities !== "[ESS]" ? true : false)}

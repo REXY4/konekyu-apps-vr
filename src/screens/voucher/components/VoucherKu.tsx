@@ -19,6 +19,8 @@ import AlertPrimary from "../../../components/alert/AlertPrimary";
 import SettingUseCase from "../../../use-case/setting.useCase";
 import { FormatTime } from "../../wifi";
 import {getIpAddressSync, getAndroidIdSync} from "react-native-device-info"
+import { AppState } from 'react-native';
+import socket from "../../../helpers/socket";
 const {height} = Dimensions.get("screen")
 
 export interface VoucherSerialEnt {
@@ -60,21 +62,43 @@ const VoucherKu = ({tabButton, setTab}:{tabButton:any, setTab:any}) =>{
             const response = await axios.get(`${BaseUrl.baseProd}/member/voucher/serial?perPage=999&pop_id=${popData.popId}`, config);
             if(response.status == 200){
                 setVoucherSerial(response.data.voucher_serials.data);
-                console.log(response.data.voucher_serials.data);
                 setRefresh(false)
             }
         } catch (error) {
-            console.log("get voucher ku ", error)
+           
             setRefresh(false)
         }
     }
 
     useEffect(()=>{
-        getVoucher();
+        const handleAppStateChange = (nextAppState:string) => {
+            if (nextAppState === 'active') {
+                getVoucher();
+            }
+        };
+
+        const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+        // Cleanup event listener on component unmount
         return () => {
-        getVoucher();
+            subscription.remove();
         };
     },[tabButton]);
+
+    useEffect(()=>{
+        const handleAppStateChange = (nextAppState:string) => {
+            if (nextAppState === 'active') {
+                getVoucher();
+            }
+        };
+
+        const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+        // Cleanup event listener on component unmount
+        return () => {
+            subscription.remove();
+        };
+    },[]);
 
     const handleConnectVoucher = async () =>{
         dispatch({
@@ -180,6 +204,12 @@ const VoucherKu = ({tabButton, setTab}:{tabButton:any, setTab:any}) =>{
         setRefresh(true)
         getVoucher();
     }
+
+    useEffect(()=>{
+        socket.on("getpop", async(val:string)=>{
+            getVoucher();
+        })
+    },[socket]);
 
     return(
         <View style={{
