@@ -82,7 +82,7 @@ To learn more about React Native, take a look at the following resources:
 #DEPEDENCY
 ```
 npm i react-native-wifi-reborn
-npm i react-native-network-info
+
 ```
 
 mapbox Api 
